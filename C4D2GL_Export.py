@@ -10,7 +10,7 @@ class Vertex:
         self.pos = pos
         self.norm = norm
         
-    def Equals(self, other):
+    def __eq__(self, other):
         return other.pos == self.pos and other.norm == self.norm
         
 class Mesh:
@@ -21,7 +21,7 @@ class Mesh:
     
     def Add(self, vert):
         for i, exvert in enumerate(self.verts):
-            if exvert.Equals(vert):
+            if exvert == vert:
                 # Duplicated vertex
                 self.inds.append(i)
                 return
