@@ -8,6 +8,7 @@ header = 'C4D2C v1.0'
 fieldsep = '\n'
 valuesep = ','
 scale = 1.0 / 100.0
+pathdescformername = 'outpath.c4d2c'
 
 class Vertex:
     
@@ -110,22 +111,46 @@ def main():
     print('C4D2C v1.0 exporter script by Francesco Zoccheddu')
 
     doc = documents.GetActiveDocument()
-    path = doc.GetDocumentPath()
-    objs = doc.GetActiveObjects(c4d.GETACTIVEOBJECTFLAGS_CHILDREN)
-    
-    print('Exporting to path "' + path + '"')
+    docpath = doc.GetDocumentPath()
+    outpath = None
+
+    pathdescname = os.path.join(docpath, pathdescformername)
+    if (os.path.isfile(pathdescname)):
+        print('Found path descriptor "' + pathdescname + '"')
+        try:
+            pathdescfile = open(pathdescname, 'r')
+            pathdesc = pathdescfile.read()
+            if not os.path.isabs(pathdesc):
+                pathdesc = os.path.join(docpath, pathdesc)
+            if os.path.isdir(pathdesc):
+                outpath = pathdesc
+                print('Using output path "' + outpath + '"')
+            else:
+                print('Invalid output path descriptor')
+            pathdescfile.close()
+        except IOError:
+            print('IO Error while reading path descriptor')
+
     allok = True
+    objs = doc.GetActiveObjects(c4d.GETACTIVEOBJECTFLAGS_CHILDREN)
     for obj in objs:
         try:
             ser = SerializePolyObj(obj)
-            filename = os.path.join(path, obj.GetName())
+            if outpath is None:
+                dialogtitle = 'Export "' + obj.GetName() + '" object'
+                filename = c4d.storage.SaveDialog(c4d.FILESELECTTYPE_ANYTHING, dialogtitle, "", docpath)
+                if filename is None:
+                    print('Object "' + obj.GetName() + '" export cancelled')
+                    continue
+            else:
+                filename = os.path.join(outpath, obj.GetName())
             outfile = open(filename, 'w')
             outfile.write(ser)
             outfile.close()
-            print('Object "' + obj.GetName() + '" exported successfully')
+            print('Object "' + obj.GetName() + '" exported successfully to "' + filename + '"')
         except ValueError as e:
             allok = False
-            print('Exception while exporting object "' + obj.GetName() + '": ' + str(e))
+            print('Error while exporting object "' + obj.GetName() + '": ' + str(e))
     
     print('Exporting process finished successfully')
     
