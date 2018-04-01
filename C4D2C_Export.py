@@ -4,7 +4,7 @@ from c4d import documents
 import traceback
 import os
 
-header = 'C4D2GL v1.0'
+header = 'C4D2C v1.0'
 fieldsep = '\n'
 valuesep = ','
 scale = 1.0 / 100.0
