@@ -1,7 +1,10 @@
 #include "C4D2GL.h"
 #include <stdio.h>
+#include <stdlib.h>
 
+#if defined(_WIN32) || defined(_WIN64) 
 #pragma warning(disable : 4996)
+#endif
 
 #define _C4D2GL_HEAD_DECL "C4D2GL v1.0"
 #define _C4D2GL_HEAD_DECL_LEN (sizeof(_C4D2GL_HEAD_DECL) / sizeof(char) - 1)
@@ -18,30 +21,28 @@ int _c4d2gl_float (FILE * file, float * out);
 
 int _c4d2gl_sep (FILE * file, char sep)
 {
-	return getc (file) == sep;
+	return getc (file) != sep;
 }
 
 int _c4d2gl_head_decl (FILE * file)
 {
-	int pos, ch;
+	int pos;
 	pos = 0;
-	ch = getc (file);
-	while (pos < _C4D2GL_HEAD_DECL_LEN && ch == _C4D2GL_HEAD_DECL[pos])
+	while (pos < _C4D2GL_HEAD_DECL_LEN && getc (file) == _C4D2GL_HEAD_DECL[pos])
 	{
-		ch = getc (file);
 		pos++;
 	}
-	return pos == _C4D2GL_HEAD_DECL_LEN;
+	return pos != _C4D2GL_HEAD_DECL_LEN;
 }
 
 int _c4d2gl_ushort (FILE * file, unsigned short * out)
 {
-	return fscanf (file, "%hu", out) == 1;
+	return fscanf (file, "%hu", out) != 1;
 }
 
 int _c4d2gl_float (FILE * file, float * out)
 {
-	return fscanf (file, "%f", out);
+	return fscanf (file, "%f", out) != 1;
 }
 
 const char * c4d2gl_errstr (int error)
@@ -58,6 +59,12 @@ const char * c4d2gl_errstr (int error)
 			return "Bad vertices count";
 		case C4D2GL_BAD_IND_COUNT:
 			return "Bad indices count";
+		case C4D2GL_BAD_VERT_DATA:
+			return "Bad vertices data";
+		case C4D2GL_BAD_IND_DATA:
+			return "Bad indices data";
+		case C4D2GL_UNEXPECTED_TAIL:
+			return "Unexpected data at the end of the file";
 		default:
 			return "Unknown";
 	}
@@ -70,21 +77,96 @@ int c4d2gl_isformaterror (int error)
 
 int c4d2gl (const char * filename, unsigned short * vert_count, float ** verts, unsigned short * ind_count, unsigned short ** inds)
 {
-	FILE * file = fopen (filename, 'r');
+	FILE * file = fopen (filename, "r");
 	if (file)
 	{
-		if (_c4d2gl_head_decl (file) || _c4d2gl_sep(file, _C4D2GL_FIELD_SEP))
+		unsigned short vc, ic;
+		float *vs;
+		unsigned short *is;
+
+		/* Header declaration */
+		if (_c4d2gl_head_decl (file) || _c4d2gl_sep (file, _C4D2GL_FIELD_SEP))
 		{
 			return C4D2GL_BAD_HEAD_DECL;
 		}
-		if (_c4d2gl_ushort (file, vert_count) || _c4d2gl_sep (file, _C4D2GL_FIELD_SEP))
+
+		/* Vertices count */
+		if (_c4d2gl_ushort (file, &vc) || _c4d2gl_sep (file, _C4D2GL_FIELD_SEP))
 		{
 			return C4D2GL_BAD_VERT_COUNT;
 		}
-		if (_c4d2gl_ushort (file, ind_count) || _c4d2gl_sep (file, _C4D2GL_FIELD_SEP))
+
+		/* Indices count */
+		if (_c4d2gl_ushort (file, &ic) || _c4d2gl_sep (file, _C4D2GL_FIELD_SEP))
 		{
 			return C4D2GL_BAD_IND_COUNT;
 		}
+
+		/* Vertices */
+		vs = NULL;
+		if (vc > 0)
+		{
+			vs = malloc (sizeof (float) * vc);
+			if (!vs)
+			{
+				return C4D2GL_MALLOC_FAIL;
+			}
+			for (int v = 0; v < vc; v++)
+			{
+				if (_c4d2gl_float (file, &vs[v]) || _c4d2gl_sep (file, _C4D2GL_VALUE_SEP))
+				{
+					free (vs);
+					return C4D2GL_BAD_VERT_DATA;
+				}
+			}
+		}
+		if (_c4d2gl_sep (file, _C4D2GL_FIELD_SEP))
+		{
+			free (vs);
+			return C4D2GL_BAD_VERT_DATA;
+		}
+
+		/* Indices */
+		is = NULL;
+		if (ic > 0)
+		{
+			is = malloc (sizeof (float) * ic);
+			if (!is)
+			{
+				return C4D2GL_MALLOC_FAIL;
+			}
+			for (int i = 0; i < ic; i++)
+			{
+				if (_c4d2gl_ushort (file, &is[i]) || _c4d2gl_sep (file, _C4D2GL_VALUE_SEP))
+				{
+					free (vs);
+					free (is);
+					return C4D2GL_BAD_IND_DATA;
+				}
+			}
+		}
+		if (_c4d2gl_sep (file, _C4D2GL_FIELD_SEP))
+		{
+			free (vs);
+			free (is);
+			return C4D2GL_BAD_IND_DATA;
+		}
+
+		/* End of file */
+		if (getc(file) != EOF)
+		{
+			free (vs);
+			free (is);
+			return C4D2GL_UNEXPECTED_TAIL;
+		}
+
+		fclose (file);
+
+		*vert_count = vc;
+		*verts = vs;
+		*ind_count = ic;
+		*inds = is;
+
 		return C4D2GL_SUCCESS;
 	}
 	else
