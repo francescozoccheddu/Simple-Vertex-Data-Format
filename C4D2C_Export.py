@@ -65,7 +65,7 @@ def GetPolyObjNormals(obj):
         norms = []
         polys = obj.GetAllPolygons()
         for poly in polys:
-            norms.add(CalcTriangleNormal(poly.a, poly.b, poly.c))
+            norms.append(CalcTriangleNormal(poly.a, poly.b, poly.c))
     return norms
     
 def IsPolyObj(obj):
