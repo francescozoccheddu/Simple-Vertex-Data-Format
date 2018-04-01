@@ -13,10 +13,18 @@
 #define C4D2C_BAD_IND_DATA (5 | C4D2C_FORMAT_ERROR_BIT)
 #define C4D2C_UNEXPECTED_TAIL (6 | C4D2C_FORMAT_ERROR_BIT)
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 const char * c4d2c_errstr (int error);
 
 int c4d2c_isformaterror (int error);
 
 int c4d2c (const char *filename, unsigned short * vert_count, float ** verts, unsigned short * ind_count, unsigned short ** inds);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
