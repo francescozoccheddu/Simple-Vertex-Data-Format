@@ -100,7 +100,7 @@ def SerializePolyObj(obj):
     return ser
     
 def main():
-    print('C4D2GL v1.0 exporter script by Francesco Zoccheddu')
+    print('C4D2C v1.0 exporter script by Francesco Zoccheddu')
 
     doc = documents.GetActiveDocument()
     path = doc.GetDocumentPath()
