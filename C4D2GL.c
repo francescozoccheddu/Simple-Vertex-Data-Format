@@ -1,111 +1,94 @@
 #include "C4D2GL.h"
 #include <stdio.h>
-#include <limits.h>
-#include <ctype.h>
+
+#pragma warning(disable : 4996)
 
 #define _C4D2GL_HEAD_DECL "C4D2GL v1.0"
 #define _C4D2GL_HEAD_DECL_LEN (sizeof(_C4D2GL_HEAD_DECL) / sizeof(char) - 1)
+#define _C4D2GL_FIELD_SEP '\n'
+#define _C4D2GL_VALUE_SEP ','
 
-#define _C4D2GL_EOS -7
-#define _C4D2GL_PARSE_SUCCESS 0
-#define _C4D2GL_PARSE_FAILURE 1
-#define _C4D2GL_MAX_INT USHRT_MAX
+int _c4d2gl_sep (FILE * file, char sep);
 
-typedef int (*_c4d2gl_pop_func)(void * stream);
+int _c4d2gl_head_decl (FILE * file);
 
-int _c4d2gl_pop_file (FILE * file);
+int _c4d2gl_ushort (FILE * file, unsigned short * out);
 
-int _c4d2gl_pop_charp (char ** charp);
+int _c4d2gl_float (FILE * file, float * out);
 
-int _c4d2gl_parse_head_decl (_c4d2gl_pop_func pop_stream_func, void * stream, char separator);
-
-int _c4d2gl_parse_unsigned_integer (_c4d2gl_pop_func pop_stream_func, void * stream, char separator, int max, int * out);
-
-int _c4d2gl_head (_c4d2gl_pop_func pop_stream_func, void * stream, int * vertices_count, int * indices_count);
-
-int _c4d2gl_pop_file (FILE * file)
+int _c4d2gl_sep (FILE * file, char sep)
 {
-	int ch = getc (file);
-	if (ch == EOF)
-	{
-		if (ferror (file))
-		{
-			return C4D2GL_IO_ERROR;
-		}
-		else
-		{
-			return _C4D2GL_EOS;
-		}
-	}
-	else
-	{
-		return ch;
-	}
+	return getc (file) == sep;
 }
 
-int _c4d2gl_pop_charp (char ** charp)
-{
-	char ch = *charp[0];
-	if (ch == '\0')
-	{
-		return _C4D2GL_EOS;
-	}
-	else
-	{
-		(*charp)++;
-		return ch;
-	}
-}
-
-int _c4d2gl_parse_head_decl (_c4d2gl_pop_func pop, void * stream, char sep)
+int _c4d2gl_head_decl (FILE * file)
 {
 	int pos, ch;
 	pos = 0;
-	ch = pop (stream);
+	ch = getc (file);
 	while (pos < _C4D2GL_HEAD_DECL_LEN && ch == _C4D2GL_HEAD_DECL[pos])
 	{
+		ch = getc (file);
 		pos++;
 	}
-	if (pos == _C4D2GL_HEAD_DECL_LEN && pop(stream) == sep)
+	return pos == _C4D2GL_HEAD_DECL_LEN;
+}
+
+int _c4d2gl_ushort (FILE * file, unsigned short * out)
+{
+	return fscanf (file, "%hu", out) == 1;
+}
+
+int _c4d2gl_float (FILE * file, float * out)
+{
+	return fscanf (file, "%f", out);
+}
+
+const char * c4d2gl_errstr (int error)
+{
+	switch (error)
 	{
-		return _C4D2GL_PARSE_SUCCESS;
-	}
-	else
-	{
-		return _C4D2GL_PARSE_FAILURE;
+		case C4D2GL_SUCCESS:
+			return "Success";
+		case C4D2GL_IO_ERROR:
+			return "File IO error";
+		case C4D2GL_BAD_HEAD_DECL:
+			return "Bad header declaration";
+		case C4D2GL_BAD_VERT_COUNT:
+			return "Bad vertices count";
+		case C4D2GL_BAD_IND_COUNT:
+			return "Bad indices count";
+		default:
+			return "Unknown";
 	}
 }
 
-int _c4d2gl_parse_unsigned_integer (_c4d2gl_pop_func pop, void * stream, char sep, int max, int * out)
+int c4d2gl_isformaterror (int error)
 {
-	unsigned int val;
-	int ch;
-	val = 0;
-	ch = pop (stream);
-	if (isdigit (ch))
+	return error & C4D2GL_FORMAT_ERROR_BIT;
+}
+
+int c4d2gl (const char * filename, unsigned short * vert_count, float ** verts, unsigned short * ind_count, unsigned short ** inds)
+{
+	FILE * file = fopen (filename, 'r');
+	if (file)
 	{
-		while (isdigit (ch))
+		if (_c4d2gl_head_decl (file) || _c4d2gl_sep(file, _C4D2GL_FIELD_SEP))
 		{
-			unsigned int oldval = val;
-			val = val * 10 + ch - '0';
-			if (val < oldval || val > max)
-			{
-				return _C4D2GL_PARSE_FAILURE;
-			}
-			ch = pop (stream);
+			return C4D2GL_BAD_HEAD_DECL;
 		}
-		if (ch == sep)
+		if (_c4d2gl_ushort (file, vert_count) || _c4d2gl_sep (file, _C4D2GL_FIELD_SEP))
 		{
-			*out = val;
-			return _C4D2GL_PARSE_SUCCESS;
+			return C4D2GL_BAD_VERT_COUNT;
 		}
-		else
+		if (_c4d2gl_ushort (file, ind_count) || _c4d2gl_sep (file, _C4D2GL_FIELD_SEP))
 		{
-			return _C4D2GL_PARSE_FAILURE;
+			return C4D2GL_BAD_IND_COUNT;
 		}
+		return C4D2GL_SUCCESS;
 	}
 	else
 	{
-		return _C4D2GL_PARSE_FAILURE;
+		return C4D2GL_IO_ERROR;
 	}
 }
