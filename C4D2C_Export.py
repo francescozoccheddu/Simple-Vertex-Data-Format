@@ -35,64 +35,50 @@ class Mesh:
       
                 
 def MakeMesh(obj):
-    if not IsPolyObjTriangulated(obj):
-        raise ValueError('Polygon is not triangulated')
-    
     mesh = Mesh()
     polys = obj.GetAllPolygons()
     points = obj.GetAllPoints()
-    norms = GetPolyObjNormals(obj)
-    
+    phongnorms = obj.CreatePhongNormals()
+
     n = 0
     for poly in polys:
-        mesh.Add(Vertex(points[poly.a] * scale, norms[n]))
-        n += 1
-        mesh.Add(Vertex(points[poly.b] * scale, norms[n]))
-        n += 1
-        mesh.Add(Vertex(points[poly.c] * scale, norms[n]))
-        n += 1
-        
+        if not poly.IsTriangle():
+            raise ValueError('Polygon is not triangulated')
+
+        a = points[poly.a]
+        b = points[poly.b]
+        c = points[poly.c]
+
+        if phongnorms is not None:
+            anorm = phongnorms[n + 0]
+            bnorm = phongnorms[n + 1]
+            cnorm = phongnorms[n + 2]
+            n += 4
+        else:
+            norm = CalcTriangleNormal(a,b,c)
+            anorm = bnorm = cnorm = norm
+
+        mesh.Add(Vertex(a * scale, anorm))
+        mesh.Add(Vertex(b * scale, bnorm))
+        mesh.Add(Vertex(c * scale, cnorm))
+
     return mesh
 
 def CalcTriangleNormal(a, b, c):
     u = b - a
     v = c - a
     norm = u.Cross(v)
-    return norm.GetNormalized()
-
-def GetPolyObjNormals(obj):
-    norms = obj.CreatePhongNormals()
-    if norms is None:
-        norms = []
-        polys = obj.GetAllPolygons()
-        points = obj.GetAllPoints()
-        for poly in polys:
-            a = points[poly.a]
-            b = points[poly.b]
-            c = points[poly.c]
-            norm = CalcTriangleNormal(a, b, c)
-            norms.append(norm)
-            norms.append(norm)
-            norms.append(norm)
-    return norms
-    
-def IsPolyObj(obj):
-    return obj.GetType() == c4d.Opolygon
-    
-def IsPolyObjTriangulated(obj):
-        polys = obj.GetAllPolygons()
-        for poly in polys:
-            if not poly.IsTriangle():
-                return False
-        return True    
+    return norm.GetNormalized()  
 
 def SerializeVec(v):
     return str(v.x) + valuesep + str(v.y) + valuesep + str(v.z) + valuesep
 
 def SerializePolyObj(obj):
-    if not IsPolyObj(obj):
+    if obj.GetType() != c4d.Opolygon:
         raise ValueError('Object is not a PolygonObject')
+
     mesh = MakeMesh(obj)
+
     ser = header
     ser += fieldsep
     ser += str(len(mesh.verts * 6))
