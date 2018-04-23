@@ -20,7 +20,7 @@
 + `\n`
 
 ### User defined name
-+ `[A-Za-z\_]+`
++ `[A-Za-z_]+`
 
 ### Comment
 + _empty_
@@ -44,11 +44,8 @@ A _comment_ can be placed between tokens and after the last token.
 + _list_section_ _list_
 
 ### List
-
-+ @ _data_type # _comp_count_ : _name_ = _data_ ;
-+ @ _data_type # _comp_count_ : _name_ = _data_ , ;
-+ @ _data_type # _comp_count_ * _vert_count_ : _name_ = _data_ ;
-+ @ _data_type # _comp_count_ * _vert_count_ : _name_ = _data_ , ;
++ @ _data_type # _comp_count_ : _name_ = _data_ `[,]?` ;
++ @ _data_type # _comp_count_ * _vert_count_ : _name_ = _data_ `[,]?` ;
 + : _name_ = _expression_ ;
 
 ### Data type
