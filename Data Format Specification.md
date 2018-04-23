@@ -1,13 +1,15 @@
 # C4D<sup>2</sup>C
 ## Data format specification v0.1
 
+> Each symbol preceded or followed by whitespace in a definition is a token.
+
 ### Comment
 + _empty_
 + /* _any_string_ */
 + _whitespace_
 + _newline_
 + _comment_ _comment_
-> A _comment_ can be placed between tokens and after the last token.
+> A _comment_ can be placed between each pair of consecutive tokens.
 
 ### File
 + < _header_ > _list_section_
@@ -79,7 +81,7 @@
 + _indexed_pointer<sub>1</sub>_ ^ _natural_<sub>2</sub> $ _natural<sub>3</sub>_
 > Uses the _natural<sub>2</sub>_ as offset for the source _pointer<sub>1</sub>_ and the _natural<sub>3</sub>_ as number of components to retrieve from the same source.
 
-### Regular expression legend
+### Regular expression token legend
 
 #### Empty
 + `?$`
