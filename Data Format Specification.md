@@ -8,6 +8,7 @@
 + /* _any_string_ */
 + _whitespace_
 + _newline_
++ _carriage_return_
 + _comment_ _comment_
 > A _comment_ can be placed between each pair of consecutive tokens.
 
@@ -23,16 +24,11 @@
 
 ### List
 > Single vector:
-+ @ _data_type # _comp_count_ : _name_ = _data_ _optional_comma_ ;
++ : _name_ # _component_count_ = _data_ _optional_comma_ ;
 > Vector list:
-+ @ _data_type # _comp_count_ * _vect_count_ : _name_ = _data_ _optional_comma_ ;
++ : _name_ # _component_count_ * _vector_count_ = _data_ _optional_comma_ ;
 > Derived list:
 + : _name_ = _expression_ ;
-
-### Data type
-+ n
-+ i
-+ f
 
 ### Component count
 + _natural_
@@ -54,12 +50,10 @@
 + _data_ , _data_
 
 ### Value
-> With __n__ data type:
 + _natural_
-> With __i__ data type:
 + _integer_
-> With __r__ data type:
 + _real_
+> The actual expected type depends on the called parse function.
 
 ### Expression
 + _pointer_
@@ -74,7 +68,7 @@
 
 #### Indexed pointer
 + _basic_pointer<sub>1</sub>_ ? _list<sub>2</sub>_
-> Uses the __n__ _list<sub>2</sub>_ as index array for the source _basic_pointer<sub>1</sub>_.
+> Uses the _list<sub>2</sub>_ with _natural_ data as index array for the source _basic_pointer<sub>1</sub>_.
 
 #### Filtered pointer
 + _basic_pointer<sub>1</sub>_ ^ _natural_<sub>2</sub> $ _natural<sub>3</sub>_
@@ -100,6 +94,9 @@
 
 #### Newline
 + `\n`
+
+#### Carriage return
++ `\r`
 
 #### User defined name
 + `[A-Za-z_]+`
