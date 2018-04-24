@@ -30,7 +30,7 @@
 + : _name_ = _expression_ ;
 
 ### Data type
-+ ui
++ n
 + i
 + f
 
@@ -54,7 +54,7 @@
 + _data_ , _data_
 
 ### Value
-> With __ui__ data type:
+> With __n__ data type:
 + _natural_
 > With __i__ data type:
 + _integer_
@@ -74,7 +74,7 @@
 
 #### Indexed pointer
 + _basic_pointer<sub>1</sub>_ ? _list<sub>2</sub>_
-> Uses the __ui__ _list<sub>2</sub>_ as index array for the source _basic_pointer<sub>1</sub>_.
+> Uses the __n__ _list<sub>2</sub>_ as index array for the source _basic_pointer<sub>1</sub>_.
 
 #### Filtered pointer
 + _basic_pointer<sub>1</sub>_ ^ _natural_<sub>2</sub> $ _natural<sub>3</sub>_
