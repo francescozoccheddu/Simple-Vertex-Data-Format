@@ -1,4 +1,4 @@
-# C4D<sup>2</sup>C
+# Simple Vertex Data Format
 ## Data format specification v0.1
 
 > Each symbol preceded or followed by whitespace in a definition is a token.
