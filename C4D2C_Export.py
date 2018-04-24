@@ -4,6 +4,8 @@ from c4d import documents
 import traceback
 import os
 import re
+from enum import Enum
+from abc import ABC, abstractmethod
 
 header = 'C4D2C v1.0'
 fieldsep = '\n'
@@ -11,28 +13,89 @@ valuesep = ','
 scale = 1.0 / 100.0
 pathdescformername = 'outpath.c4d2c'
 
-class Buffer:
+class DataType(Enum):
+    NATURAL = 0
+    INT = 1
+    REAL = 2
+    
+    def __add__(self, other):
+        return Test(max(self.value, other.value))
+
+    @staticmethod
+    def detect_type(value):
+        if isinstance(value, int):
+            if value >= 0:
+                return DataType.NATURAL
+            else:
+                return DataType.INT
+        elif isinstance(value, float):
+            return DataType.REAL
+        else:
+            return None
+
+class Vector:
+
+    def __init__(self, source = None):
+        if source is None:
+            self.data = list()
+            self.type = DataType.NATURAL
+        else:
+            self.data = list(source.data)
+            self.type = source.type
+    
+    def __getitem__(self, key):
+        return self.data[key]
+
+    def __len__(self):
+        return len(self.data)
+
+    def __add__(self, comp):
+        clone = Vector(self) 
+        clone += comp
+        return clone
+
+    def add_component(self, comp):
+        comp_type = DataType.detect_type(comp)
+        if comp_type is None:
+            raise ValueError('Invalid component type')
+        else:
+            self.type = self.type + comp_type
+            self.data.append(comp)
+
+    def __iadd__(self, addend):
+        if isinstance(addend, list):
+            for comp in addend:
+                add_component(comp)
+        else:
+            add_component(addend)
+        return self
+
+class Buffer(ABC):
 
     name_re = re.compile(r'[a-z_]+', re.IGNORECASE)
 
-    def __init__(self, name):
-        self.data = []
-        self.name = name
-        self.validate_name()
+    def __init__(self):
+        self.name = None
 
     def validate_name(self):
-        if not isinstance(self.name, str):
-            raise TypeError('Parameter "name" must be a string')
-        if not Buffer.name_re.fullmatch(self.name):
-            raise ValueError('Parameter "name" is invalid')
+        if isinstance(self.name, int):
+            if self.name < 0:
+                return ValueError('Integer names cannot be negative')
+        elif isinstance(self.name, str):
+            if not Buffer.name_re.fullmatch(self.name):
+                return ValueError('User defined names must match the regexp [A-Za-z_]')
+        else:
+            return TypeError('Names must be integers or strings')
+        return None
 
-    def append(self, attr):
-        self.data.append(attr)
+    @abstractmethod
+    def encode(self):
+        pass
+    
+    
+        
 
-class IndexedBuffer(Buffer):
 
-    def __init__(self, name):
-        super().__init__(self, name)
 
 
         
