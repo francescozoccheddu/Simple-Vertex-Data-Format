@@ -3,6 +3,7 @@ from c4d import gui
 from c4d import documents
 import traceback
 import os
+import re
 
 header = 'C4D2C v1.0'
 fieldsep = '\n'
@@ -10,14 +11,30 @@ valuesep = ','
 scale = 1.0 / 100.0
 pathdescformername = 'outpath.c4d2c'
 
-class Vertex:
-    
-    def __init__(self, pos, norm):
-        self.pos = pos
-        self.norm = norm
-        
-    def __eq__(self, other):
-        return other.pos == self.pos and other.norm == self.norm
+class Buffer:
+
+    name_re = re.compile(r'[a-z_]+', re.IGNORECASE)
+
+    def __init__(self, name):
+        self.data = []
+        self.name = name
+        self.validate_name()
+
+    def validate_name(self):
+        if not isinstance(self.name, str):
+            raise TypeError('Parameter "name" must be a string')
+        if not Buffer.name_re.fullmatch(self.name):
+            raise ValueError('Parameter "name" is invalid')
+
+    def append(self, attr):
+        self.data.append(attr)
+
+class IndexedBuffer(Buffer):
+
+    def __init__(self, name):
+        super().__init__(self, name)
+
+
         
 class Mesh:
     
