@@ -14,15 +14,15 @@ class Parser
 public:
 
 	Parser (std::istream & stream);
-
-	Parser (std::istream & stream, int current_line, int current_col);
 	
 	template<typename T>
 	bool next_number (T & out);
 
 	bool next_delimiter (char & out);
 
-	bool next_string (const char * alphabet, std::string & out);
+	std::string next_string (const char * alphabet);
+
+	int consume_string (const std::string & string);
 
 private:
 

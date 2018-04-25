@@ -1,108 +1,108 @@
 # Simple Vertex Data Format
 ## Data format specification v0.1
 
-> Each symbol preceded or followed by whitespace in a definition is a token.
-
 ### Comment
-+ _empty_
-+ /* _any_string_ */
-+ _whitespace_
-+ _newline_
-+ _carriage_return_
-+ _comment_ _comment_
-> A _comment_ can be placed between each pair of consecutive tokens.
++ _`[\s\t\n\v\h\r]*`_
++ `/*` _`.*`_ `*/`
++ _comment<sub>1</sub>_ _comment<sub>2</sub>_
+> A *comment* can appear before and after each token.
 
-### File
-+ < _header_ > _list_section_
+### Document
++ `<` _header_ `>`
++ _document_ `@` _declaration_ `;`
 
 ### Header
-+ C4D2Cv0.1
++ `SVDFv0.1`
 
-### List section
-+ _empty_
-+ _list_section_ _list_
-
-### List
-> Single vector:
-+ : _name_ # _component_count_ = _data_ _optional_comma_ ;
-> Vector list:
-+ : _name_ # _component_count_ * _vector_count_ = _data_ _optional_comma_ ;
-> Derived list:
-+ : _name_ = _expression_ ;
-
-### Component count
-+ _natural_
-> The value must match to the number of components of each vector in the _list_.
-
-### Vector count
-+ _natural_
-> The value must match to the number of vectors in the _list_
+### Declaration
++ _name_ = _pointer_
 
 ### Name
-+ _natural_
-> Internal usage only. Hidden to the parser.
-+ _user_defined_name_
-> Visible to the parser.
-
-### Data
-+ _empty_
-+ _value_
-+ _data_ , _data_
-
-### Value
-+ _natural_
-+ _integer_
-+ _real_
-> The actual expected type depends on the called parse function.
-
-### Expression
-+ _pointer_
-+ _expression_ & _pointer_
-> Concatenates multiple *pointer*s to obtain a single interleaved array.
-*pointer*s sizes must match, with an exception: if a _pointer_ points to a single vector, then it is automatically repeated.
+#### Internal names:
++ `!`_`[A-Za-z_]+`_
+#### User defined names:
++ _`[A-Za-z_]+`_
 
 ### Pointer
++ `(` _pointer_ `)`
++ _pointer<sub>1</sub>_ `&` _pointer<sub>2</sub>_
++ _pointer<sub>1</sub>_ `?` _pointer<sub>2</sub>_
++ _pointer_ * _times_
++ _pointer_ `[` _from_ `:` _to_ `]`
++ _immediate_
++ _name_
 
-#### Basic pointer
-+ _list_
+### Immediate
 
-#### Indexed pointer
-+ _basic_pointer<sub>1</sub>_ ? _list<sub>2</sub>_
-> Uses the _list<sub>2</sub>_ with _natural_ data as index array for the source _basic_pointer<sub>1</sub>_.
+#### Single vector
++ `#` _component_count_ _pure_parametric_data_
++ `#` _component_count_ _data_
+> The *component_count* token must be a natural (*`[+]?[0-9]+`*) that matches the number of values defined in the *data* token.
+#### Vector list
++ `#` *component_count* `*` *vector_count* _data_
+> The *component_count* and the _vector_count_ tokens must both be natural (*`[+]?[0-9]+`*) and their product must match the number of values defined in the *data* token.
 
-#### Filtered pointer
-+ _basic_pointer<sub>1</sub>_ ^ _natural_<sub>2</sub> $ _natural<sub>3</sub>_
-+ _indexed_pointer<sub>1</sub>_ ^ _natural_<sub>2</sub> $ _natural<sub>3</sub>_
-> Uses the _natural<sub>2</sub>_ as offset for the source _pointer<sub>1</sub>_ and the _natural<sub>3</sub>_ as number of components to retrieve from the same source.
+### Pure parametric data
+#### Integer pure parametric data
++ `i`
+#### Real pure parametric data
++ `r`
 
-### Regular expression token legend
+### Data
+#### Integer data
++ `i` `:`
++ `i` `:` _integer_array_ _`[,]?`_
+#### Real data
++ `r` `:`
++ `r` `:` _real_array_ _`[,]?`_
 
-#### Empty
-+ `?$`
+### Integer array
++ _integer_value_
++ _integer_array_ `,` _integer_value_
+> The *integer value* token must be an integer (*`[+-]?[0-9]+`*).
+### Real array
++ _real_value_
++ _real_array_ `,` _real_value_
+> The *real value* token must be a real (*`[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?`*).
 
-#### Natural
-+ `[+]?[0-9]+`
+## Example
+```
+/* Header */
+SVDFv0.1
 
-#### Integer
-+ `[+-]?[0-9]+`
+@ position_comp = 
+#3*4r: 
+-1.0, -1.0,  0.0,
+-1.0,  1.0,  0.0,
+ 1.0,  1.0,  0.0,
+ 1.0, -1.0,  0.0;
 
-#### Real
-+ `[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?`
+@ normal_comp
+#3*1r: 0.0, 0.0, 1.0;
 
-#### Whitespace
-+ `\s`
+@ normal_pt = 
+normal_comp ? #2i: 1, 1
 
-#### Newline
-+ `\n`
+@ color_rgb = 
+#3r;
 
-#### Carriage return
-+ `\r`
+@ color_a = 
+#1r: 1.0;
 
-#### User defined name
-+ `[A-Za-z_]+`
+@ color =
+color_rgb & color_a;
 
-#### Any string
-+ `.*`
+@ color_pt =
+color * 2
 
-#### Optional comma
-+ `[,]?`
+@ inds =
+#6i:
+1, 2, 3, 3, 4, 5;
+
+@ normal_inds =
+#2i:
+1, 1;
+
+@ position_tr =
+
+```
