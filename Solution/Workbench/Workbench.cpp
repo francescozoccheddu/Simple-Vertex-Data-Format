@@ -1,16 +1,39 @@
 
 #include <string>
 #include <iostream>
-#include "../Library/ImmediatePointer.hpp"
+
+class TestBase
+{
+
+public:
+
+
+};
+
+template<typename T>
+class TestDerived : public TestBase
+{
+
+public:
+
+	TestDerived (T t) : val (t) {}
+
+	T val;
+
+	T get () const
+	{
+		return val;
+	}
+
+};
 
 int main ()
 {
 
-	Pointer<int,float> * p = new ImmediatePointer<int, float, true> { 3,3 };
-	Pointer<int,float> * p2 = new ImmediatePointer<int, float, false> { 3,3 };
+	TestBase * b = new TestDerived<float>{ 7356.7f };
 
-	std::cout << p->is_real () << std::endl;
-	std::cout << p2->is_real () << std::endl;
+
+	float a = static_cast<TestDerived<float>*>(b)->get();
 
 	system ("pause");
 	return 0;
