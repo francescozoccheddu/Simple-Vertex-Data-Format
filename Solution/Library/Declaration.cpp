@@ -1,30 +1,38 @@
 #include "Declaration.hpp"
 #include "Encodable.hpp"
 #include "Grammar.hpp"
+
 #include <ostream>
+#include <utility>
 
 namespace SVDF
 {
 
-	bool SVDF::Declaration::has_data ()
+	Declaration::Declaration (const Map & _map) : map{ _map }
+	{}
+
+	Declaration::Declaration (const Map && _map) : map{ std::move (_map) }
+	{}
+
+	bool Declaration::has_data () const
 	{
 		return false;
 	}
 
-	void Declaration::encode (std::ostream & stream, Format format) const
+	void Declaration::encode (std::ostream & _stream, Format _format) const
 	{
-		map.encode (stream, format);
-		switch (format)
+		map.encode (_stream, _format);
+		switch (_format)
 		{
-			case SVDF::Encodable::Format::SPACE:
-			case SVDF::Encodable::Format::NEWLINE:
-			case SVDF::Encodable::Format::NEWLINE_TRUNCATE:
-				stream << " ";
+			case Format::SPACE:
+			case Format::NEWLINE:
+			case Format::NEWLINE_TRUNCATE:
+				_stream << " ";
 				break;
-			case SVDF::Encodable::Format::COMPACT:
+			case Encodable::Format::COMPACT:
 				break;
 		}
-		stream << Grammar::declaration_suffix;
+		_stream << Grammar::declaration_suffix;
 	}
 
 }
