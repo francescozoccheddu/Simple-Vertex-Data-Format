@@ -1,19 +1,38 @@
-< Header >
-[ SVDFv0.1 ]
+< My 2D quad model >
 
-@ position = 
--1.0, -1.0,  0.0,
--1.0,  1.0,  0.0,
- 1.0,  1.0,  0.0,
- 1.0, -1.0,  0.0;
+? model = "2D quad" ;
 
-< Commented out, will not be processed
-@ color =
-1.0, 0.0, 0.0,
-0.0, 1.0, 1.0,
-0.0, 0.0, 1.0,
-0.0, 1.0, 1.0; >
+< Vertex position >
+? name = "position"
+# count = 4
+$ scale = 100.0 
+: -1.0, -1.0,  0.0,
+  -1.0,  1.0,  0.0, 
+   1.0,  1.0,  0.0, 
+   1.0, -1.0,  0.0;
 
-@ index =
-1, 2, 3,
-3, 4, 5;
+< Commented out
+? name = "color"
+? type = "rgb"
+# count = 4
+: 1.0, 0.0, 0.0,
+  0.0, 0.0, 1.0,
+  0.0, 1.0, 0.0,
+  1.0, 0.0, 1.0; >
+
+< Vertex color >
+? name = "color"
+? type = "rgba"
+# count = 4
+: 1.0, 0.0, 0.0, 1.0,
+  0.0, 0.0, 1.0, 1.0,
+  0.0, 1.0, 0.0, 1.0,
+  1.0, 0.0, 1.0, 1.0;
+
+< Indices >
+? name = "indices"
+# count = 6
+? prim = "triangles"
+? type = "short"
+: 0, 1, 2,
+  2, 3, 4;
