@@ -2,7 +2,7 @@
 [ SVDFv0.1 ]
 
 < Vertex position >
-@ position # 12 = 
+@ position # 12= 
 -1.0, -1.0,  0.0,
 -1.0,  1.0,  0,0,
  1.0,  1.0,  0,0,
