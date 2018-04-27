@@ -1,5 +1,5 @@
 #include "Parser.hpp"
-
+#include "Grammar.hpp"
 #include <string>
 #include <cstdio>
 #include <istream>
@@ -7,7 +7,7 @@
 namespace SVDF
 {
 
-	Parser::Parser (std::istream & _stream) : stream{ _stream }, state{ 0, 0, false, false }
+	Parser::Parser (std::istream & _stream) : _stream{ _stream }, state{ 0, 0, false, false }
 	{}
 
 	Map Parser::Parser::next_declaration ()
@@ -51,7 +51,7 @@ namespace SVDF
 	bool Parser::is_eof ()
 	{
 		consume_comment ();
-		return stream.eof ();
+		return _stream.eof ();
 	}
 
 	Map Parser::consume_map ()
@@ -63,8 +63,8 @@ namespace SVDF
 			char pc = peek ();
 			if (pc == Grammar::string_entry_prefix || pc == Grammar::int_entry_prefix || pc == Grammar::float_entry_prefix)
 			{
-				stream.get ();
-				std::string key = consume_key ();
+				_stream.get ();
+				Key key = consume_key ();
 				if (map.has (key))
 				{
 					throw std::logic_error ("Duplicate key");
@@ -74,7 +74,7 @@ namespace SVDF
 				{
 					case Grammar::string_entry_prefix:
 					{
-						std::string value;
+						String value;
 						consume (Grammar::string_value_prefix);
 						char c;
 						while ((c = consume()) != Grammar::string_value_suffix)
@@ -98,14 +98,14 @@ namespace SVDF
 					case Grammar::int_entry_prefix:
 					{
 						int value;
-						stream >> value;
+						_stream >> value;
 						map.int_map.emplace (key, value);
 					}
 					break;
 					case Grammar::float_entry_prefix:
 					{
 						float value;
-						stream >> value;
+						_stream >> value;
 						map.float_map.emplace (key, value);
 					}
 					break;
@@ -118,13 +118,13 @@ namespace SVDF
 		}
 	}
 
-	std::string Parser::consume_key ()
+	Key Parser::consume_key ()
 	{
-		std::string key;
+		Key key;
 		consume_comment ();
 		while (Grammar::is_key_char (peek ()))
 		{
-			key += stream.get ();
+			key += _stream.get ();
 			if (key.size () > Grammar::max_key_length)
 			{
 				throw std::logic_error ("Name cannot be longer than max");
@@ -135,17 +135,17 @@ namespace SVDF
 		return key;
 	}
 
-	void Parser::consume (const std::string & string)
+	void Parser::consume (const std::string & _string)
 	{
-		for (char c : string)
+		for (char c : _string)
 		{
 			consume (c);
 		}
 	}
 
-	void Parser::consume (char c)
+	void Parser::consume (char _c)
 	{
-		if (consume () != c)
+		if (consume () != _c)
 		{
 			throw std::logic_error ("Expected char c");
 		}
@@ -153,7 +153,7 @@ namespace SVDF
 
 	char Parser::consume ()
 	{
-		int c = stream.get ();
+		int c = _stream.get ();
 		if (c != EOF)
 		{
 			return static_cast<char>(c);
@@ -172,7 +172,7 @@ namespace SVDF
 			char c;
 			if (!try_peek (c))
 			{
-				stream.get ();
+				_stream.get ();
 				if (comment_block)
 				{
 					throw std::runtime_error ("Unclosed comment block at EOF");
@@ -193,14 +193,14 @@ namespace SVDF
 					if (c == '\n')
 					{
 						state.current_line++;
-						state.last_newline = stream.tellg ();
+						state.last_newline = _stream.tellg ();
 					}
 				}
 				else
 				{
 					return;
 				}
-				stream.get ();
+				_stream.get ();
 			}
 		}
 	}
@@ -218,32 +218,32 @@ namespace SVDF
 		}
 	}
 
-	bool Parser::try_peek (char & out)
+	bool Parser::try_peek (char & _out)
 	{
-		int c = stream.peek ();
+		int c = _stream.peek ();
 		if (c == EOF)
 		{
 			return false;
 		}
 		else
 		{
-			out = c;
+			_out = c;
 			return true;
 		}
 	}
 
 	Parser::BackupState Parser::make_backup () const
 	{
-		return BackupState{ state, stream.tellg () };
+		return BackupState{ state, _stream.tellg () };
 	}
 
-	void Parser::restore (const BackupState & backup)
+	void Parser::restore (const BackupState & _backup)
 	{
 		state.compromised = true;
-		if (static_cast<int>(backup.pos) != -1)
+		if (static_cast<int>(_backup.pos) != -1)
 		{
-			stream.seekg (backup.pos);
-			state = backup.state;
+			_stream.seekg (_backup.pos);
+			state = _backup.state;
 		}
 	}
 

@@ -1,18 +1,26 @@
 #include "Map.hpp"
-#include "Parser.hpp"
+#include "Grammar.hpp"
+#include "Encodable.hpp"
 
 #include <map>
+#include <algorithm> 
+#include <functional> 
+#include <cctype>
+#include <locale>
+#include <ostream>
+#include <sstream>
+#include <string>
 
 namespace SVDF
 {
 
 	template<typename T>
-	bool _get_string (const std::string & key, T & out, const std::map<std::string, T> & map)
+	bool _get_string (const Key & _key, T & _out, const std::map<Key, T> & _map)
 	{
-		auto it = map.find (key);
-		if (it != map.end ())
+		auto it = _map.find (_key);
+		if (it != _map.end ())
 		{
-			out = it->second;
+			_out = it->second;
 			return true;
 		}
 		else
@@ -21,34 +29,74 @@ namespace SVDF
 		}
 	}
 
-	bool Map::get_string (const std::string & key, std::string & out) const
+	template<typename T, typename O1, typename O2>
+	bool _put (const Key & _key, T _value, std::map<Key, T> & _map, const std::map<Key, O1> & _other1, const std::map<Key, O2> & _other2)
 	{
-		return _get_string (key, out, string_map);
-	}
-
-	bool Map::get_int (const std::string & key, int & out) const
-	{
-		return _get_string (key, out, int_map);
-	}
-
-	bool Map::get_float (const std::string & key, float & out) const
-	{
-		return _get_string (key, out, float_map);
-	}
-
-	bool Map::get_type (const std::string & key, Type & out) const
-	{
-		if (string_map.count (key))
+		if (!_other1.count (_key) && !_other2.count (_key))
 		{
-			out = Type::STRING;
+			return _map.emplace (_key, _value).second;
 		}
-		else if (int_map.count (key))
+		else
 		{
-			out = Type::INT;
+			return false;
 		}
-		else if (float_map.count(key))
+	}
+
+	void _assert_valid_key (const Key & _key)
+	{
+		if (!_key.is_valid())
 		{
-			out = Type::FLOAT;
+			Key cause_key = _key;
+			cause_key.erase (cause_key.begin (), std::find_if (cause_key.begin (), cause_key.end (), std::not1 (std::ptr_fun<int, int> (std::isspace))));
+			if (cause_key.size () > 0)
+			{
+				if (cause_key.size () > 10)
+				{
+					cause_key.resize (7);
+					cause_key.resize (10, '.');
+				}
+			}
+			throw std::runtime_error ("Invalid key '" + _key + "'");
+		}
+	}
+
+	template <typename T>
+	void _assert_valid_key_set (const std::map<Key, T> & _map)
+	{
+		for (auto entry : _map)
+		{
+			_assert_valid_key (entry.first);
+		}
+	}
+
+	bool Map::get_string (const Key & _key, String & _out) const
+	{
+		return _get_string (_key, _out, string_map);
+	}
+
+	bool Map::get_int (const Key & _key, int & _out) const
+	{
+		return _get_string (_key, _out, int_map);
+	}
+
+	bool Map::get_float (const Key & _key, float & _out) const
+	{
+		return _get_string (_key, _out, float_map);
+	}
+
+	bool Map::get_type (const Key & _key, Type & _out) const
+	{
+		if (string_map.count (_key))
+		{
+			_out = Type::STRING;
+		}
+		else if (int_map.count (_key))
+		{
+			_out = Type::INT;
+		}
+		else if (float_map.count (_key))
+		{
+			_out = Type::FLOAT;
 		}
 		else
 		{
@@ -57,49 +105,121 @@ namespace SVDF
 		return true;
 	}
 
-	bool Map::has (const std::string & key) const
+	bool Map::has (const Key & _key) const
 	{
-		return string_map.count (key) || int_map.count (key) || float_map.count (key);
+		return string_map.count (_key) || int_map.count (_key) || float_map.count (_key);
 	}
 
-	template<typename T, typename O1, typename O2>
-	bool _put (const std::string & key, T value, std::map<std::string, T> & map, const std::map<std::string, O1> & other1, const std::map<std::string, O2> & other2)
+	bool Map::put_string (const Key & _key, const String & _value)
 	{
-		if (!other1.count (key) && !other2.count (key))
+		return _put (_key, _value, string_map, int_map, float_map);
+	}
+
+	bool Map::put_int (const Key & _key, int _value)
+	{
+		return _put (_key, _value, int_map, string_map, float_map);
+	}
+
+	bool Map::put_float (const Key & _key, float _value)
+	{
+		return _put (_key, _value, float_map, string_map, int_map);
+	}
+
+	bool Map::remove (const Key & _key)
+	{
+		return string_map.erase (_key) || int_map.erase (_key) || float_map.erase (_key);
+	}
+
+	const std::map<Key, String>& Map::get_string_map () const
+	{
+		return string_map;
+	}
+
+	const std::map<Key, int>& Map::get_int_map () const
+	{
+		return int_map;
+	}
+
+	const std::map<Key, float>& Map::get_float_map () const
+	{
+		return float_map;
+	}
+
+	void Map::encode (std::ostream & stream, Format format) const
+	{
+		_assert_valid_key_set (string_map);
+		_assert_valid_key_set (int_map);
+		_assert_valid_key_set (float_map);
+
+		bool first = true;
+
+		bool spaces = false;
+		bool newlines = false;
+
+		switch (format)
 		{
-			return map.emplace (key, value).second;
+			case SVDF::Encodable::Format::NEWLINE_TRUNCATE:
+			case SVDF::Encodable::Format::NEWLINE:
+				newlines = true;
+			case SVDF::Encodable::Format::SPACE:
+				spaces = true;
+			case SVDF::Encodable::Format::COMPACT:
+				break;
 		}
-		else
+
+		for (auto entry : string_map)
 		{
-			return false;
+			if (newlines && !first) { stream << "\n"; }
+			first = false;
+			stream << Grammar::string_entry_prefix;
+			if (spaces) { stream << " "; }
+			stream << entry.first;
+			if (spaces) { stream << " "; }
+			stream << Grammar::key_suffix;
+			if (spaces) { stream << " "; }
+			stream << Grammar::string_value_prefix;
+			stream << entry.second;
+			stream << Grammar::string_value_suffix;
+			if (spaces && !newlines) { stream << " "; }
+		}
+		for (auto entry : int_map)
+		{
+			if (newlines && !first) { stream << "\n"; }
+			first = false;
+			stream << Grammar::int_entry_prefix;
+			if (spaces) { stream << " "; }
+			stream << entry.first;
+			if (spaces) { stream << " "; }
+			stream << Grammar::key_suffix;
+			if (spaces) { stream << " "; }
+			stream << entry.second;
+			if (spaces && !newlines) { stream << " "; }
+		}
+		for (auto entry : float_map)
+		{
+			if (newlines && !first) { stream << "\n"; }
+			first = false;
+			stream << Grammar::float_entry_prefix;
+			if (spaces) { stream << " "; }
+			stream << entry.first;
+			if (spaces) { stream << " "; }
+			stream << Grammar::key_suffix;
+			if (spaces) { stream << " "; }
+			stream << entry.second;
+			if (spaces && !newlines) { stream << " "; }
 		}
 	}
 
-	bool Map::put_string (const std::string & key, const std::string & value)
+	bool Key::is_valid () const
 	{
-		return _put (key, value, string_map, int_map, float_map);
+		return is_valid (*this);
 	}
 
-	bool Map::put_int (const std::string & key, int value)
+	bool Key::is_valid (const std::string & _key)
 	{
-		return _put (key, value, int_map, string_map, float_map);
-	}
-
-	bool Map::put_float (const std::string & key, float value)
-	{
-		return _put (key, value, float_map, string_map, int_map);
-	}
-
-	bool Map::remove (const std::string & key)
-	{
-		return string_map.erase (key) || int_map.erase (key) || float_map.erase (key);
-	}
-
-	bool Map::is_valid_key (const std::string & key)
-	{
-		if (key.size () <= Grammar::max_key_length)
+		if (_key.size () <= Grammar::max_key_length)
 		{
-			for (char c : key)
+			for (char c : _key)
 			{
 				if (!Grammar::is_key_char (c))
 				{
@@ -107,14 +227,19 @@ namespace SVDF
 				}
 			}
 		}
-		return false;
+		return true;
 	}
 
-	bool Map::is_valid_string_value (const std::string & value)
+	bool String::is_valid () const
 	{
-		if (value.size () <= Grammar::max_key_length)
+		return is_valid (*this);
+	}
+
+	bool String::is_valid (const std::string & string)
+	{
+		if (string.size () <= Grammar::max_key_length)
 		{
-			for (char c : value)
+			for (char c : string)
 			{
 				if (!Grammar::is_string_char (c))
 				{
@@ -125,18 +250,4 @@ namespace SVDF
 		return false;
 	}
 
-	const std::map<std::string, std::string>& Map::get_string_map () const
-	{
-		return string_map;
-	}
-
-	const std::map<std::string, int>& Map::get_int_map () const
-	{
-		return int_map;
-	}
-
-	const std::map<std::string, float>& Map::get_float_map () const
-	{
-		return float_map;
-	}
 }

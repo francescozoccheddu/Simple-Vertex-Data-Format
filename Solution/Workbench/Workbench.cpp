@@ -13,7 +13,8 @@ int main ()
 		SVDF::Parser p (file);
 		while (!p.is_eof ())
 		{
-			p.next_declaration ();
+			SVDF::Map map = p.next_declaration ();
+			std::cout << map << std::endl;
 			while (p.is_in_data_section ())
 			{
 				std::cout << p.next_value<float> () << ",";
