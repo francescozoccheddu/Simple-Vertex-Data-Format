@@ -19,20 +19,18 @@ SVDF::ListInfo SVDF::Parser::Parser::next_list ()
 		state.header_consumed = true;
 	}
 	consume_comment ();
+
 	return ListInfo{};
 }
 
-void SVDF::Parser::skip_value ()
-{}
-
 bool SVDF::Parser::is_in_data_section () const
 {
-	return false;
+	return state.data_section;
 }
 
 bool SVDF::Parser::is_compromised () const
 {
-	return false;
+	return state.compromised;
 }
 
 void SVDF::Parser::consume_comment ()
