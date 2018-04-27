@@ -15,29 +15,21 @@ namespace SVDF
 		const BackupState backup{ make_backup () };
 		try
 		{
-			/*consume_comment ();
-			std::string name;
+			Map map = consume_map ();
+			char c = consume ();
+			if (c == Grammar::data_prefix)
 			{
-				char c;
-				while (Grammar::is_key_char (c = peek ()) && name.size () <= Grammar::max_name_length)
-				{
-					stream.get ();
-					name += c;
-				}
-				if (name.size () < 1)
-				{
-					throw std::logic_error ("Expected name character");
-				}
-				else if (name.size () > Grammar::max_name_length)
-				{
-					throw std::logic_error ("Name cannot be longer than max");
-				}
+				state.data_section = true;
+				return map;
 			}
-			consume_comment ();
-			consume (Grammar::data_prefix);
-			state.data_section = true;
-			return name;*/
-			return Map{};
+			else if (c == Grammar::declaration_suffix)
+			{
+				return map;
+			}
+			else
+			{
+				throw std::logic_error ("Expected cosi");
+			}
 		}
 		catch (std::logic_error &)
 		{
@@ -83,7 +75,7 @@ namespace SVDF
 					case Grammar::string_entry_prefix:
 					{
 						std::string value;
-						consume (Grammar::string_entry_prefix);
+						consume (Grammar::string_value_prefix);
 						char c;
 						while ((c = consume()) != Grammar::string_value_suffix)
 						{
