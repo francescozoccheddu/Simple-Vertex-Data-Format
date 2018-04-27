@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include "../Library/Parser.hpp"
+#include "../Library/Declaration.hpp"
 
 int main ()
 {
@@ -13,13 +14,9 @@ int main ()
 		SVDF::Parser p (file);
 		while (!p.is_eof ())
 		{
-			SVDF::Map map = p.next_declaration ();
-			std::cout << map << std::endl;
-			while (p.is_in_data_section ())
-			{
-				std::cout << p.next_value<float> () << ",";
-			}
-			std::cout << std::endl;
+			SVDF::DataDeclaration<float> d{ p.next_declaration () };
+			d.parse_data (p);
+			std::cout << d << std::endl;
 		}
 	}
 	else

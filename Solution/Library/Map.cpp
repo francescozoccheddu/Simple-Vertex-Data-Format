@@ -145,7 +145,7 @@ namespace SVDF
 		return float_map;
 	}
 
-	void Map::encode (std::ostream & stream, Format format) const
+	void Map::encode (std::ostream & _stream, Format _format) const
 	{
 		_assert_valid_key_set (string_map);
 		_assert_valid_key_set (int_map);
@@ -156,7 +156,7 @@ namespace SVDF
 		bool spaces = false;
 		bool newlines = false;
 
-		switch (format)
+		switch (_format)
 		{
 			case SVDF::Encodable::Format::NEWLINE_TRUNCATE:
 			case SVDF::Encodable::Format::NEWLINE:
@@ -169,44 +169,44 @@ namespace SVDF
 
 		for (auto entry : string_map)
 		{
-			if (newlines && !first) { stream << "\n"; }
+			if (newlines && !first) { _stream << "\n"; }
 			first = false;
-			stream << Grammar::string_entry_prefix;
-			if (spaces) { stream << " "; }
-			stream << entry.first;
-			if (spaces) { stream << " "; }
-			stream << Grammar::key_suffix;
-			if (spaces) { stream << " "; }
-			stream << Grammar::string_value_prefix;
-			stream << entry.second;
-			stream << Grammar::string_value_suffix;
-			if (spaces && !newlines) { stream << " "; }
+			_stream << Grammar::string_entry_prefix;
+			if (spaces) { _stream << " "; }
+			_stream << entry.first;
+			if (spaces) { _stream << " "; }
+			_stream << Grammar::key_suffix;
+			if (spaces) { _stream << " "; }
+			_stream << Grammar::string_value_prefix;
+			_stream << entry.second;
+			_stream << Grammar::string_value_suffix;
+			if (spaces && !newlines) { _stream << " "; }
 		}
 		for (auto entry : int_map)
 		{
-			if (newlines && !first) { stream << "\n"; }
+			if (newlines && !first) { _stream << "\n"; }
 			first = false;
-			stream << Grammar::int_entry_prefix;
-			if (spaces) { stream << " "; }
-			stream << entry.first;
-			if (spaces) { stream << " "; }
-			stream << Grammar::key_suffix;
-			if (spaces) { stream << " "; }
-			stream << entry.second;
-			if (spaces && !newlines) { stream << " "; }
+			_stream << Grammar::int_entry_prefix;
+			if (spaces) { _stream << " "; }
+			_stream << entry.first;
+			if (spaces) { _stream << " "; }
+			_stream << Grammar::key_suffix;
+			if (spaces) { _stream << " "; }
+			_stream << entry.second;
+			if (spaces && !newlines) { _stream << " "; }
 		}
 		for (auto entry : float_map)
 		{
-			if (newlines && !first) { stream << "\n"; }
+			if (newlines && !first) { _stream << "\n"; }
 			first = false;
-			stream << Grammar::float_entry_prefix;
-			if (spaces) { stream << " "; }
-			stream << entry.first;
-			if (spaces) { stream << " "; }
-			stream << Grammar::key_suffix;
-			if (spaces) { stream << " "; }
-			stream << entry.second;
-			if (spaces && !newlines) { stream << " "; }
+			_stream << Grammar::float_entry_prefix;
+			if (spaces) { _stream << " "; }
+			_stream << entry.first;
+			if (spaces) { _stream << " "; }
+			_stream << Grammar::key_suffix;
+			if (spaces) { _stream << " "; }
+			_stream << entry.second;
+			if (spaces && !newlines) { _stream << " "; }
 		}
 	}
 
@@ -217,7 +217,7 @@ namespace SVDF
 
 	bool Key::is_valid (const std::string & _key)
 	{
-		if (_key.size () <= Grammar::max_key_length)
+		if (_key.size () <= Grammar::max_key_length && !_key.empty())
 		{
 			for (char c : _key)
 			{
@@ -226,8 +226,12 @@ namespace SVDF
 					return false;
 				}
 			}
+			return true;
 		}
-		return true;
+		else
+		{
+			return false;
+		}
 	}
 
 	bool String::is_valid () const
@@ -246,8 +250,12 @@ namespace SVDF
 					return false;
 				}
 			}
+			return true;
 		}
-		return false;
+		else
+		{
+			return false;
+		}
 	}
 
 }
