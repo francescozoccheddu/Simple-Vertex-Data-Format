@@ -1,39 +1,21 @@
 
 #include <string>
 #include <iostream>
-
-class TestBase
-{
-
-public:
-
-
-};
-
-template<typename T>
-class TestDerived : public TestBase
-{
-
-public:
-
-	TestDerived (T t) : val (t) {}
-
-	T val;
-
-	T get () const
-	{
-		return val;
-	}
-
-};
+#include <fstream>
+#include "../Library/Parser.hpp"
 
 int main ()
 {
-
-	TestBase * b = new TestDerived<float>{ 7356.7f };
-
-
-	float a = static_cast<TestDerived<float>*>(b)->get();
+	std::ifstream file ("../../example.svdf");
+	if (file.is_open ())
+	{
+		SVDF::Parser p (file);
+		p.next_list ();
+	}
+	else
+	{
+		std::cout << "Not open" << std::endl;
+	}
 
 	system ("pause");
 	return 0;
