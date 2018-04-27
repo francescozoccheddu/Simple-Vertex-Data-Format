@@ -1,20 +1,19 @@
 < Header >
 [ SVDFv0.1 ]
 
-< Vertex position >
-@ position # 12= 
+@ position = 
 -1.0, -1.0,  0.0,
--1.0,  1.0,  0,0,
- 1.0,  1.0,  0,0,
- 1.0, -1.0,  0,0;
+-1.0,  1.0,  0.0,
+ 1.0,  1.0,  0.0,
+ 1.0, -1.0,  0.0;
 
 < Commented out, will not be processed
-@ color # 12 =
+@ color =
 1.0, 0.0, 0.0,
 0.0, 1.0, 1.0,
 0.0, 0.0, 1.0,
 0.0, 1.0, 1.0; >
 
-@ index # 6 =
+@ index =
 1, 2, 3,
 3, 4, 5;

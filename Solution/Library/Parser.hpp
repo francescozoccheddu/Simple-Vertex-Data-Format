@@ -8,53 +8,45 @@ namespace SVDF
 
 namespace Grammar
 {
-	constexpr char header_prefix{ '[' };
-	constexpr char header[]{ "SVDFv0.1" };
-	constexpr char header_suffix{ ']' };
-	constexpr char name_prefix{ '@' };
-	constexpr char length_prefix{ '#' };
-	constexpr char data_prefix{ '=' };
-	constexpr char data_separator{ ',' };
-	constexpr char data_suffix{ ';' };
-	constexpr char comment_prefix{ '<' };
-	constexpr char comment_suffix{ '>' };
-	constexpr int max_name_length{ 512 };
+constexpr char header_prefix{ '[' };
+constexpr char header[]{ "SVDFv0.1" };
+constexpr char header_suffix{ ']' };
+constexpr char name_prefix{ '@' };
+constexpr char data_prefix{ '=' };
+constexpr char data_separator{ ',' };
+constexpr char data_suffix{ ';' };
+constexpr char comment_prefix{ '<' };
+constexpr char comment_suffix{ '>' };
+constexpr int max_name_length{ 512 };
+constexpr char name_alphabet[]{ "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_!$%&?." };
+constexpr char space_alphabet[]{ " \t\n\v\f\r" };
 
-	constexpr bool is_space_char (char c)
+constexpr bool is_space_char (char c)
+{
+	for (char space_char : space_alphabet)
 	{
-		constexpr char space_alphabet[]{ " \t\n\v\f\r" };
-		for (char space_char : space_alphabet)
+		if (space_char == c)
 		{
-			if (space_char == c)
-			{
-				return true;
-			}
+			return true;
 		}
-		return false;
 	}
+	return false;
+}
 
-	constexpr bool is_name_char (char c)
+constexpr bool is_name_char (char c)
+{
+	for (char name_char : name_alphabet)
 	{
-		constexpr char name_alphabet[]{ "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_!$%&?." };
-		for (char name_char : name_alphabet)
+		if (name_char == c)
 		{
-			if (name_char == c)
-			{
-				return true;
-			}
+			return true;
 		}
-		return false;
 	}
+	return false;
+}
 
 }
 
-
-struct ListInfo
-{
-	static constexpr int no_lenght{ -1 };
-	std::string name;
-	int length;
-};
 
 class Parser
 {
@@ -62,8 +54,8 @@ class Parser
 public:
 
 	Parser (std::istream & stream);
-	
-	ListInfo next_list ();
+
+	std::string next_list ();
 
 	template<typename T>
 	T next_value ();
@@ -72,7 +64,7 @@ public:
 
 	bool is_compromised () const;
 
-	bool is_eof () const;
+	bool is_eof ();
 
 private:
 
@@ -106,17 +98,48 @@ private:
 
 	bool try_peek (char & out);
 
-	BackupState backup () const;
+	BackupState make_backup () const;
 
-	void restore (BackupState backup);
-	
+	void restore (const BackupState & backup);
+
 };
 
 template<typename T>
 inline T Parser::next_value ()
 {
 	static_assert(std::is_arithmetic<T>::value, "T must be numeric type");
-	return T ();
+	const BackupState backup{ make_backup () };
+	try
+	{
+		consume_comment ();
+		T val;
+		stream >> val;
+		if (!stream.fail ())
+		{
+			consume_comment ();
+			char c = consume ();
+			switch (c)
+			{
+				case Grammar::data_separator:
+					break;
+				case Grammar::data_suffix:
+					state.data_section = false;
+					break;
+				default:
+					throw std::logic_error ("Expected value separator or data suffix");
+			}
+			return val;
+		}
+		else
+		{
+			throw std::logic_error ("Value parse failed");
+		}
+	}
+	catch (std::logic_error &)
+	{
+		restore (backup);
+		throw;
+	}
 }
 
 }

@@ -18,9 +18,7 @@
 
 ### List
 + `@` _name_ `=` _data_ `;`
-+ `@` _name_ `#` _length_ `=` _data_ `;`
-> The token *name* cannot be longer than 512 characters and must match the following regular expression: `[0-9A-Za-z_.$&?]`.  
-> The token *length* must be a natural number (`[+]?[0-9]+`) smaller than 2<sup>15</sup> equal to the number of *real*s defined by the *data* token.
+> The token *name* cannot be longer than 512 characters and must match the following regular expression: `[0-9A-Za-z_.#$&?]`.  
 
 ### Data
 + _empty_
@@ -32,21 +30,19 @@
 < Header >
 [ SVDFv0.1 ]
 
-< List with fixed length >
-@ position # 12 = 
+@ position = 
 -1.0, -1.0,  0.0,
--1.0,  1.0,  0,0,
- 1.0,  1.0,  0,0,
- 1.0, -1.0,  0,0;
+-1.0,  1.0,  0.0,
+ 1.0,  1.0,  0.0,
+ 1.0, -1.0,  0.0;
 
 < Commented out, will not be processed
-@ color # 12 =
+@ color =
 1.0, 0.0, 0.0,
 0.0, 1.0, 1.0,
 0.0, 0.0, 1.0,
 0.0, 1.0, 1.0; >
 
-< List of any length >
 @ index =
 1, 2, 3,
 3, 4, 5;
