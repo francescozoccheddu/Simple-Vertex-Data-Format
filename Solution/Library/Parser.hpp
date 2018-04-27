@@ -72,6 +72,8 @@ public:
 
 	bool is_compromised () const;
 
+	bool is_eof () const;
+
 private:
 
 	struct State
@@ -92,13 +94,15 @@ private:
 	std::istream & stream;
 	State state;
 
-	void consume_comment ();
-
 	void consume (const std::string& string);
 
 	void consume (char c);
 
 	char consume ();
+
+	void consume_comment ();
+
+	char peek ();
 
 	bool try_peek (char & out);
 

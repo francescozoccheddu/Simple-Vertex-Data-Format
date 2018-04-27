@@ -6,11 +6,14 @@
 
 int main ()
 {
+
 	std::ifstream file ("../../example.svdf");
 	if (file.is_open ())
 	{
 		SVDF::Parser p (file);
-		p.next_list ();
+		SVDF::ListInfo i = p.next_list ();
+		std::cout << "Name: " << std::endl << i.name << std::endl;
+		std::cout << "Length: " << std::endl << i.length << std::endl;
 	}
 	else
 	{
