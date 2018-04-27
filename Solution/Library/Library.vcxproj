@@ -21,6 +21,9 @@
   <ItemGroup>
     <ClInclude Include="Parser.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Parser.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{FB51E074-3A4E-4821-B1AD-B50E0A289732}</ProjectGuid>

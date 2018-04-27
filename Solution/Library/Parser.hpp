@@ -5,8 +5,55 @@
 namespace SVDF
 {
 
-namespace Parser
+namespace Grammar
 {
+	constexpr char header_prefix{ '[' };
+	constexpr char header[]{ "SVDFv0.1" };
+	constexpr char header_suffix{ ']' };
+	constexpr char name_prefix{ '@' };
+	constexpr char length_prefix{ '#' };
+	constexpr char data_prefix{ '=' };
+	constexpr char data_separator{ ',' };
+	constexpr char data_suffix{ ';' };
+	constexpr char comment_prefix{ '<' };
+	constexpr char comment_suffix{ '>' };
+	constexpr int max_name_length{ 512 };
+
+	constexpr bool is_space_char (char c)
+	{
+		constexpr char space_alphabet[]{ " \t\n\v\f\r" };
+		for (char space_char : space_alphabet)
+		{
+			if (space_char == c)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	constexpr bool is_name_char (char c)
+	{
+		constexpr char name_alphabet[]{ "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_!$%&?." };
+		for (char name_char : name_alphabet)
+		{
+			if (name_char == c)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+}
+
+
+struct ListInfo
+{
+	static constexpr int no_lenght{ -1 };
+	std::string name;
+	int length;
+};
 
 class Parser
 {
@@ -15,26 +62,58 @@ public:
 
 	Parser (std::istream & stream);
 	
+	ListInfo next_list ();
+
 	template<typename T>
-	bool next_number (T & out);
+	T next_value ();
 
-	bool next_delimiter (char & out);
+	void skip_value ();
 
-	std::string next_string (const char * alphabet);
+	bool is_in_data_section () const;
 
-	int consume_string (const std::string & string);
+	bool is_compromised () const;
 
 private:
 
-	bool consume_comment ();
-	
+	struct State
+	{
+		int current_line;
+		std::streampos last_newline;
+		bool compromised;
+		bool header_consumed;
+		bool data_section;
+	};
+
+	struct BackupState
+	{
+		State state;
+		std::streampos pos;
+	};
+
+	void consume_comment ();
+
+	void consume (const std::string& string);
+
+	void consume (char c);
+
+	char consume ();
+
+	bool try_peek (char & out);
+
+	BackupState backup () const;
+
+	void restore (BackupState backup);
+
 	std::istream & stream;
 
-	int last_newline;
-	int current_line;
+	State state;
 	
 };
 
+template<typename T>
+inline T Parser::next_value ()
+{
+	return T ();
 }
 
 }
