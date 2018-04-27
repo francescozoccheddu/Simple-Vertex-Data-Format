@@ -1,74 +1,57 @@
 #include "Parser.hpp"
 
+#include <string>
 #include <cstdio>
 #include <istream>
 
 SVDF::Parser::Parser (std::istream & _stream) : stream{ _stream }, state{ 0, 0, false, false, false }
 {}
 
-SVDF::ListInfo SVDF::Parser::Parser::next_list ()
+std::string SVDF::Parser::Parser::next_list ()
 {
-	// Header
-	if (!state.header_consumed)
+	const BackupState backup{ make_backup () };
+	try
 	{
-		consume_comment ();
-		consume (Grammar::header_prefix);
-		consume_comment ();
-		consume (Grammar::header);
-		consume_comment ();
-		consume (Grammar::header_suffix);
-		state.header_consumed = true;
-	}
-	consume_comment ();
-	consume (Grammar::name_prefix);
-	consume_comment ();
-	ListInfo info;
-	// Name
-	{
-		char c;
-		while (Grammar::is_name_char (c = peek ()) && info.name.size () <= Grammar::max_name_length)
+		if (!state.header_consumed)
 		{
-			stream.get ();
-			info.name += c;
-		}
-		if (info.name.size () < 1)
-		{
-			throw std::logic_error ("Expected name");
-		}
-		else if (info.name.size () > Grammar::max_name_length)
-		{
-			throw std::logic_error ("Name cannot be longer than max");
-		}
-	}
-	consume_comment ();
-	// Length
-	{
-		char c = peek ();
-		if (c == Grammar::length_prefix)
-		{
-			stream.get ();
 			consume_comment ();
-			int l;
-			stream >> l;
-			if (!stream.fail () && l >= 0)
-			{
-				info.length = l;
-			}
-			else
-			{
-				throw std::logic_error ("Expected natural");
-			}
+			consume (Grammar::header_prefix);
+			consume_comment ();
+			consume (Grammar::header);
+			consume_comment ();
+			consume (Grammar::header_suffix);
+			state.header_consumed = true;
 		}
-		else
+		consume_comment ();
+		consume (Grammar::name_prefix);
+		consume_comment ();
+		std::string name;
 		{
-			info.length = ListInfo::no_lenght;
+			char c;
+			while (Grammar::is_name_char (c = peek ()) && name.size () <= Grammar::max_name_length)
+			{
+				stream.get ();
+				name += c;
+			}
+			if (name.size () < 1)
+			{
+				throw std::logic_error ("Expected name character");
+			}
+			else if (name.size () > Grammar::max_name_length)
+			{
+				throw std::logic_error ("Name cannot be longer than max");
+			}
 		}
+		consume_comment ();
+		consume (Grammar::data_prefix);
+		state.data_section = true;
+		return name;
 	}
-	consume_comment ();
-	consume (Grammar::data_prefix);
-	consume_comment ();
-	state.data_section = true;
-	return info;
+	catch (std::logic_error &)
+	{
+		restore (backup);
+		throw;
+	}
 }
 
 bool SVDF::Parser::is_in_data_section () const
@@ -81,8 +64,9 @@ bool SVDF::Parser::is_compromised () const
 	return state.compromised;
 }
 
-bool SVDF::Parser::is_eof () const
+bool SVDF::Parser::is_eof ()
 {
+	consume_comment ();
 	return stream.eof ();
 }
 
@@ -183,12 +167,12 @@ bool SVDF::Parser::try_peek (char & out)
 	}
 }
 
-SVDF::Parser::BackupState SVDF::Parser::backup () const
+SVDF::Parser::BackupState SVDF::Parser::make_backup () const
 {
 	return BackupState{ state, stream.tellg () };
 }
 
-void SVDF::Parser::restore (BackupState backup)
+void SVDF::Parser::restore (const BackupState & backup)
 {
 	state.compromised = true;
 	if (static_cast<int>(backup.pos) != -1)

@@ -11,9 +11,15 @@ int main ()
 	if (file.is_open ())
 	{
 		SVDF::Parser p (file);
-		SVDF::ListInfo i = p.next_list ();
-		std::cout << "Name: " << std::endl << i.name << std::endl;
-		std::cout << "Length: " << std::endl << i.length << std::endl;
+		while (!p.is_eof ())
+		{
+			std::cout << p.next_list () << std::endl;
+			while (p.is_in_data_section ())
+			{
+				std::cout << p.next_value<float> () << ",";
+			}
+			std::cout << std::endl;
+		}
 	}
 	else
 	{
