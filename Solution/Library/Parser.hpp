@@ -1,6 +1,7 @@
 #pragma once
 
 #include <istream>
+#include <type_traits>
 
 namespace SVDF
 {
@@ -67,8 +68,6 @@ public:
 	template<typename T>
 	T next_value ();
 
-	void skip_value ();
-
 	bool is_in_data_section () const;
 
 	bool is_compromised () const;
@@ -90,6 +89,9 @@ private:
 		std::streampos pos;
 	};
 
+	std::istream & stream;
+	State state;
+
 	void consume_comment ();
 
 	void consume (const std::string& string);
@@ -103,16 +105,13 @@ private:
 	BackupState backup () const;
 
 	void restore (BackupState backup);
-
-	std::istream & stream;
-
-	State state;
 	
 };
 
 template<typename T>
 inline T Parser::next_value ()
 {
+	static_assert(std::is_arithmetic<T>::value, "T must be numeric type");
 	return T ();
 }
 
