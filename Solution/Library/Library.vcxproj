@@ -19,10 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Declaration.hpp" />
+    <ClInclude Include="Encodable.hpp" />
+    <ClInclude Include="Grammar.hpp" />
     <ClInclude Include="Map.hpp" />
     <ClInclude Include="Parser.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Declaration.cpp" />
+    <ClCompile Include="Encodable.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Parser.cpp" />
   </ItemGroup>
