@@ -4,79 +4,94 @@
 #include <vector>
 #include <string>
 #include <type_traits>
+#include <iterator>
 
 namespace SVDF
 {
 
-class Encodable
-{
-
-public:
-
-	enum class Format
+	class Encodable
 	{
-		COMPACT,
-		SPACE,
-		NEWLINE,
-		NEWLINE_TRUNCATE,
+
+	public:
+
+		enum class Format
+		{
+			COMPACT,
+			SPACE,
+			NEWLINE,
+			NEWLINE_TRUNCATE,
+		};
+
+		template <typename Iterator, typename = enable_if_iterator<Iterator>::type>
+		static void encode (std::ostream & stream, const Iterator & first, const Iterator & last, Format format = Format::NEWLINE)
+		{
+			Encodable::EncodableIterator<Iterator> (first, last).encode (stream, format);
+		}
+
+		template <typename Iterator, typename = enable_if_iterator<Iterator>::type>
+		static std::string encode (const Iterator & first, const Iterator & last, Format format = Format::NEWLINE)
+		{
+			return Encodable::EncodableIterator<Iterator> (first, last).encode (format);
+		}
+
+		virtual void encode (std::ostream & stream, Format format = Format::NEWLINE) const = 0;
+
+		std::string encode (Format format = Format::NEWLINE) const;
+
+		friend std::ostream & operator << (std::ostream & stream, const Encodable & encodable);
+
+		virtual ~Encodable () = default;
+
+	private:
+
+		template<class T, typename P = std::iterator_traits<T>::value_type, typename V = std::remove_pointer< P >::type >
+		struct enable_if_iterator : std::enable_if< std::is_base_of <Encodable, V >::value > {};
+
+		template <typename Iterator, typename = enable_if_iterator<Iterator>::type>
+		class EncodableIterator;
+
 	};
 
-	template <typename T>
-	static void encode (std::ostream & stream, const std::vector<T*> & encodables, Format format = Format::NEWLINE);
-
-	template <typename T>
-	static std::string encode (const std::vector<T*> & encodables, Format format = Format::NEWLINE);
-
-	virtual void encode (std::ostream & stream, Format format = Format::NEWLINE) const = 0;
-
-	std::string encode (Format format = Format::NEWLINE) const;
-
-	friend std::ostream & operator << (std::ostream & stream, const Encodable & encodable);
-	
-	virtual ~Encodable () = default;
-
-};
-
-template <typename T>
-inline void Encodable::encode (std::ostream & stream, const std::vector<T*> &encodables, Format format)
-{
-	static_assert(std::is_base_of<Encodable, T>::value, "T must be Encodable");
-	bool first = true;
-	for (const Encodable * e : encodables)
+	template <typename Iterator, typename >
+	class Encodable::EncodableIterator : public Encodable
 	{
-		if (!first)
+
+	public:
+
+		EncodableIterator (const Iterator & begin, const Iterator & end) : begin{ begin }, end{ end } {}
+
+		void encode (std::ostream & stream, Format format = Format::NEWLINE) const override
 		{
-			switch (format)
+			for (auto it = begin; it != end; ++it)
 			{
-				case SVDF::Encodable::Format::COMPACT:
-					break;
-				case SVDF::Encodable::Format::SPACE:
-					stream << "\n";
-					break;
-				case SVDF::Encodable::Format::NEWLINE:
-				case SVDF::Encodable::Format::NEWLINE_TRUNCATE:
-					stream << "\n\n";
-					break;
+				const Encodable * e = *it;
+				if (it != begin)
+				{
+					switch (format)
+					{
+						case SVDF::Encodable::Format::COMPACT:
+							break;
+						case SVDF::Encodable::Format::SPACE:
+							stream << "\n";
+							break;
+						case SVDF::Encodable::Format::NEWLINE:
+						case SVDF::Encodable::Format::NEWLINE_TRUNCATE:
+							stream << "\n\n";
+							break;
+					}
+				}
+				e->encode (stream, format);
 			}
 		}
-		first = false;
-		e->encode (stream, format);
-	}
-}
 
-template<typename T>
-inline std::string Encodable::encode (const std::vector<T*>& encodables, Format format)
-{
-	std::ostringstream stream;
-	Encodable::encode (stream, encodables, format);
-	return stream.str ();
-}
+	private:
 
-template<typename T, typename = std::enable_if_t<std::is_base_of<Encodable, T>::value>>
-std::ostream & operator<<(std::ostream & stream, const std::vector<T*>& encodables)
-{
-	Encodable::encode (stream, encodables);
-	return stream;
-}
+		Iterator begin;
+		Iterator end;
+
+	};
+
+
+
 
 }
