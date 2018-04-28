@@ -122,7 +122,9 @@ namespace SVDF
 					default:
 					{
 						std::stringstream ss;
-						ss << "Expected value separator '";
+						ss << "Expected ";
+						ss << typeid(T).name ();
+						ss << " value followed by value separator '";
 						ss << Grammar::value_separator;
 						ss << "' or declaration suffix '";
 						ss << Grammar::declaration_suffix;

@@ -26,9 +26,9 @@ int main ()
 				DataDeclaration<float> * d = new DataDeclaration<float>{ p.next_declaration<float>() };
 				document.push_back (d);
 			}
-			catch (int)
+			catch (Parser::Error & error)
 			{
-
+				std::cout << std::endl << error.where_and_what () << std::endl;
 			}
 		}
 
