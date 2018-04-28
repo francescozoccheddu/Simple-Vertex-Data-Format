@@ -4,20 +4,25 @@
 #include <fstream>
 #include "../Library/Parser.hpp"
 #include "../Library/Declaration.hpp"
+#include "../Library/Comment.hpp"
+#include <sstream>
+
+using namespace SVDF;
 
 int main ()
 {
 
-	std::ifstream file ("../../example.svdf");
-	if (file.is_open ())
+	StringParser p{ "?name=\"ciao\";" };
+	if (true)
 	{
-		SVDF::Parser p (file);
-		while (!p.is_eof ())
+		std::vector<const Encodable * > v;
+		v.push_back (new Comment{ "Prova" });
+		while (p.has_declarations ())
 		{
-			SVDF::DataDeclaration<float> d{ p.next_declaration () };
-			d.parse_data (p);
-			std::cout << d << std::endl;
+			DataDeclaration<float> * d = new DataDeclaration<float>{ p.next_declaration<float>() };
+			v.push_back (d);
 		}
+		Encodable::encode (std::cout, v);
 	}
 	else
 	{

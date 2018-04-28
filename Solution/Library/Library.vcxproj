@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Comment.hpp" />
     <ClInclude Include="Declaration.hpp" />
     <ClInclude Include="Encodable.hpp" />
     <ClInclude Include="Grammar.hpp" />
@@ -26,6 +27,7 @@
     <ClInclude Include="Parser.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Comment.cpp" />
     <ClCompile Include="Declaration.cpp" />
     <ClCompile Include="Encodable.cpp" />
     <ClCompile Include="Map.cpp" />
