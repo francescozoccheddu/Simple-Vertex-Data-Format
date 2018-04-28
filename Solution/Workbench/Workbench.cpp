@@ -15,14 +15,15 @@ int main ()
 	FileParser p{ "../../example.svdf" };
 	if (true)
 	{
-		std::vector<const Encodable * > v;
+		std::vector<Declaration*> v;
 		while (p.has_declarations ())
 		{
 			DataDeclaration<float> * d = new DataDeclaration<float>{ p.next_declaration<float>() };
 			v.push_back (d);
 		}
 
-		std::cout << v << std::endl;
+		Encodable::encode (std::cout, v.begin (), v.end ());
+
 	}
 	else
 	{
