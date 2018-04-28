@@ -81,9 +81,6 @@ namespace SVDF
 
 		void parse_data (Parser & parser);
 
-
-	private:
-
 	};
 
 	template<typename T, typename _EI>
@@ -149,7 +146,6 @@ namespace SVDF
 		{
 			Declaration::encode (stream, format);
 		}
-
 	}
 
 	template<typename T, typename _EI>

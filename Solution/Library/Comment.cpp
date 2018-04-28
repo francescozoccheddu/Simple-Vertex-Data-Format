@@ -1,7 +1,7 @@
-#include "Comment.hpp"
+#include "include/Comment.hpp"
 
-#include "Grammar.hpp"
-#include "Encodable.hpp"
+#include "include/Grammar.hpp"
+#include "include/Encodable.hpp"
 
 #include <stdexcept>
 

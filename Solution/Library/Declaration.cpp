@@ -1,7 +1,7 @@
-#include "Declaration.hpp"
+#include "include/Declaration.hpp"
 
-#include "Encodable.hpp"
-#include "Grammar.hpp"
+#include "include/Encodable.hpp"
+#include "include/Grammar.hpp"
 
 #include <ostream>
 #include <utility>
