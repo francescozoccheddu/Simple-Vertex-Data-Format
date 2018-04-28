@@ -33,7 +33,14 @@ namespace SVDF
 
 		char inline_space (char _c)
 		{
-			return std::isspace (_c) ? ' ' : _c;
+			if (_c > 0 && _c < 256)
+			{
+				return std::isspace (_c) ? ' ' : _c;
+			}
+			else
+			{
+				return _c;
+			}
 		}
 
 	}

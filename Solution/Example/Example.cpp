@@ -29,6 +29,7 @@ int main ()
 			catch (Parser::Error & error)
 			{
 				std::cout << std::endl << error.where_and_what () << std::endl;
+				std::cin.ignore ();
 			}
 		}
 

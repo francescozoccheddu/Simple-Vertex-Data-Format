@@ -4,7 +4,7 @@
 
 < Vertex position >
 ? name = "position"
-# count = 4
+# count = 44
 $ scale = 100.0 
 : -1.0, -1.0,  0.0,
   -1.0,  1.0,  0.0, 
