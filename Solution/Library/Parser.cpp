@@ -346,7 +346,7 @@ namespace SVDF
 	{
 		std::stringstream ss;
 		ss << "Parse error occurred at line ";
-		ss << line;
+		ss << (line + 1);
 		if (column != Error::unknown_column)
 		{
 			ss << ", column ";
