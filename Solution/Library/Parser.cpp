@@ -52,8 +52,15 @@ namespace SVDF
 
 	bool Parser::has_declarations ()
 	{
-		consume_comment ();
-		return !_stream.eof ();
+		if (_stream.good ())
+		{
+			consume_comment ();
+			return !_stream.eof ();
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	Map Parser::consume_map ()

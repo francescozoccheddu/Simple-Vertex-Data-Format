@@ -12,17 +12,17 @@ using namespace SVDF;
 int main ()
 {
 
-	StringParser p{ "?name=\"ciao\";" };
+	FileParser p{ "../../example.svdf" };
 	if (true)
 	{
 		std::vector<const Encodable * > v;
-		v.push_back (new Comment{ "Prova" });
 		while (p.has_declarations ())
 		{
 			DataDeclaration<float> * d = new DataDeclaration<float>{ p.next_declaration<float>() };
 			v.push_back (d);
 		}
-		Encodable::encode (std::cout, v);
+
+		std::cout << v << std::endl;
 	}
 	else
 	{

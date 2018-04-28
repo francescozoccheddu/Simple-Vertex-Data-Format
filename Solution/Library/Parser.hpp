@@ -33,6 +33,8 @@ namespace SVDF
 
 		bool has_declarations ();
 
+		virtual ~Parser () = default;
+
 	private:
 
 		struct State
