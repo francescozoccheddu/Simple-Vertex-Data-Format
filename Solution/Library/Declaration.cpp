@@ -1,4 +1,5 @@
 #include "Declaration.hpp"
+
 #include "Encodable.hpp"
 #include "Grammar.hpp"
 
@@ -11,7 +12,7 @@ namespace SVDF
 	Declaration::Declaration (const Map & _map) : map{ _map }
 	{}
 
-	Declaration::Declaration (const Map && _map) : map{ std::move (_map) }
+	Declaration::Declaration (Map && _map) : map{ std::move (_map) }
 	{}
 
 	bool Declaration::has_data () const

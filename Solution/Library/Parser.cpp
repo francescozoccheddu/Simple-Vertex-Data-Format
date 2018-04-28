@@ -1,5 +1,7 @@
 #include "Parser.hpp"
+
 #include "Grammar.hpp"
+
 #include <string>
 #include <cstdio>
 #include <istream>
@@ -10,7 +12,7 @@ namespace SVDF
 	Parser::Parser (std::istream & _stream) : _stream{ _stream }, state{ 0, 0, false, false }
 	{}
 
-	Map Parser::Parser::next_declaration ()
+	Map Parser::Parser::next_map ()
 	{
 		const BackupState backup{ make_backup () };
 		try
@@ -19,7 +21,7 @@ namespace SVDF
 			char c = consume ();
 			if (c == Grammar::data_prefix)
 			{
-				state.data_section = true;
+				state.in_data = true;
 				return map;
 			}
 			else if (c == Grammar::declaration_suffix)
@@ -38,9 +40,9 @@ namespace SVDF
 		}
 	}
 
-	bool Parser::is_in_data_section () const
+	bool Parser::has_data () const
 	{
-		return state.data_section;
+		return state.in_data;
 	}
 
 	bool Parser::is_compromised () const
@@ -48,10 +50,10 @@ namespace SVDF
 		return state.compromised;
 	}
 
-	bool Parser::is_eof ()
+	bool Parser::has_declarations ()
 	{
 		consume_comment ();
-		return _stream.eof ();
+		return !_stream.eof ();
 	}
 
 	Map Parser::consume_map ()
@@ -77,7 +79,7 @@ namespace SVDF
 						String value;
 						consume (Grammar::string_value_prefix);
 						char c;
-						while ((c = consume()) != Grammar::string_value_suffix)
+						while ((c = consume ()) != Grammar::string_value_suffix)
 						{
 							if (Grammar::is_string_char (c))
 							{
@@ -133,14 +135,6 @@ namespace SVDF
 		consume_comment ();
 		consume (Grammar::key_suffix);
 		return key;
-	}
-
-	void Parser::consume (const std::string & _string)
-	{
-		for (char c : _string)
-		{
-			consume (c);
-		}
 	}
 
 	void Parser::consume (char _c)
@@ -246,5 +240,29 @@ namespace SVDF
 			state = _backup.state;
 		}
 	}
+
+	FileParser::FileParser () : Parser{ file }
+	{}
+
+	FileParser::FileParser (const std::string & _filename) : file{ _filename }, Parser{ file }
+	{}
+
+	void FileParser::open (const std::string & _filename)
+	{
+		file.open (_filename);
+	}
+
+	bool FileParser::is_open () const
+	{
+		return file.is_open ();
+	}
+
+	void FileParser::close ()
+	{
+		file.close ();
+	}
+
+	StringParser::StringParser (const std::string & _string) : stringstream{ _string }, Parser{ stringstream }
+	{}
 
 }

@@ -14,6 +14,8 @@ namespace SVDF
 
 	public:
 
+		using std::string::string;
+
 		bool is_valid () const;
 
 		static bool is_valid (const std::string & key);
@@ -24,6 +26,8 @@ namespace SVDF
 	{
 
 	public:
+
+		using std::string::string;
 
 		bool is_valid () const;
 

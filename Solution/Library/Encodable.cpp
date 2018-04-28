@@ -7,7 +7,7 @@
 namespace SVDF
 {
 
-	void Encodable::encode (std::ostream & stream, const std::vector<const Encodable*> & encodables, Format format)
+	void Encodable::encode (std::ostream & stream, const std::vector<const Encodable*> &encodables, Format format)
 	{
 		bool first = true;
 		for (const Encodable * e : encodables)

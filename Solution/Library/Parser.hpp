@@ -2,8 +2,12 @@
 
 #include "Map.hpp"
 #include "Grammar.hpp"
+#include "Declaration.hpp"
+
+#include <string>
+#include <fstream>
 #include <istream>
-#include <type_traits>
+#include <sstream>
 
 namespace SVDF
 {
@@ -15,16 +19,19 @@ namespace SVDF
 
 		Parser (std::istream & stream);
 
-		Map next_declaration ();
+		Map next_map ();
 
 		template<typename T>
 		T next_value ();
 
-		bool is_in_data_section () const;
+		template<typename T>
+		DataDeclaration<T> next_declaration ();
+
+		bool has_data () const;
 
 		bool is_compromised () const;
 
-		bool is_eof ();
+		bool has_declarations ();
 
 	private:
 
@@ -33,7 +40,7 @@ namespace SVDF
 			int current_line;
 			std::streampos last_newline;
 			bool compromised;
-			bool data_section;
+			bool in_data;
 		};
 
 		struct BackupState
@@ -48,8 +55,6 @@ namespace SVDF
 		Map consume_map ();
 
 		Key consume_key ();
-
-		void consume (const std::string & string);
 
 		void consume (char c);
 
@@ -70,7 +75,8 @@ namespace SVDF
 	template<typename T>
 	inline T Parser::next_value ()
 	{
-		static_assert(std::is_arithmetic<T>::value, "T must be numeric type");
+		_SVDF_ASSERT_DATA_VALUE_TYPE
+
 		const BackupState backup{ make_backup () };
 		try
 		{
@@ -86,7 +92,7 @@ namespace SVDF
 					case Grammar::value_separator:
 						break;
 					case Grammar::declaration_suffix:
-						state.data_section = false;
+						state.in_data = false;
 						break;
 					default:
 						throw std::logic_error ("Expected value separator or data suffix");
@@ -104,5 +110,51 @@ namespace SVDF
 			throw;
 		}
 	}
+
+	template<typename T>
+	inline DataDeclaration<T> Parser::next_declaration ()
+	{
+		_SVDF_ASSERT_DATA_VALUE_TYPE
+
+		DataDeclaration<T> d{ next_map () };
+		d.parse_data (*this);
+		return d;
+	}
+
+	class FileParser : public Parser
+	{
+
+	public:
+
+		FileParser ();
+
+		FileParser (const std::string & _filename);
+
+		void open (const std::string & _filename);
+
+		bool is_open () const;
+
+		void close ();
+
+	private:
+
+		std::ifstream file;
+	
+	};
+
+	class StringParser : public Parser
+	{
+
+	public:
+
+		StringParser (const std::string & string);
+
+	private:
+
+		std::istringstream stringstream;
+
+	};
+
+	// TODO Exceptions
 
 }

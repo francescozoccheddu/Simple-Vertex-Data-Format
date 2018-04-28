@@ -1,14 +1,35 @@
 #pragma once
 
 #include "Grammar.hpp"
-#include "Parser.hpp"
 #include "Encodable.hpp"
 #include "Map.hpp"
+
+#include <type_traits>
 #include <ostream>
 #include <utility>
 
 namespace SVDF
 {
+
+	template<typename> struct is_data_value_base : std::false_type {};
+
+	template<> struct is_data_value_base<long double> : std::true_type {};
+	template<> struct is_data_value_base<double> : std::true_type {};
+	template<> struct is_data_value_base<float> : std::true_type {};
+	template<> struct is_data_value_base<signed long long> : std::true_type {};
+	template<> struct is_data_value_base<unsigned long long> : std::true_type {};
+	template<> struct is_data_value_base<signed long> : std::true_type {};
+	template<> struct is_data_value_base<unsigned long> : std::true_type {};
+	template<> struct is_data_value_base<signed int> : std::true_type {};
+	template<> struct is_data_value_base<unsigned int> : std::true_type {};
+	template<> struct is_data_value_base<signed short> : std::true_type {};
+	template<> struct is_data_value_base<unsigned short> : std::true_type {};
+
+	template<typename T> struct is_data_value : is_data_value_base<std::remove_volatile_t<T>> {};
+
+#define _SVDF_ASSERT_DATA_VALUE_TYPE static_assert(SVDF::is_data_value<T>::value, "T must be a non-const fundamental numeric type");
+
+	class Parser;
 
 	class Declaration : public Encodable
 	{
@@ -19,7 +40,11 @@ namespace SVDF
 
 		Declaration (const Map & map);
 
-		Declaration (const Map && map);
+		Declaration (Map && map);
+
+		Declaration (const Declaration & declaration) = default;
+
+		Declaration (Declaration && declaration) = default;
 
 		Map map;
 
@@ -34,14 +59,15 @@ namespace SVDF
 	template<typename T>
 	class DataDeclaration : public Declaration
 	{
+		_SVDF_ASSERT_DATA_VALUE_TYPE
 
 	public:
 
-		DataDeclaration () = default;
+		using Declaration::Declaration;
 
-		DataDeclaration (const Declaration & declaration);
+		DataDeclaration (const DataDeclaration & declaration) = default;
 
-		DataDeclaration (const Declaration && declaration);
+		DataDeclaration (DataDeclaration && declaration) = default;
 
 		std::vector<T> data;
 
@@ -52,14 +78,6 @@ namespace SVDF
 		void parse_data (Parser & parser);
 
 	};
-
-	template<typename T>
-	inline DataDeclaration<T>::DataDeclaration (const Declaration & declaration) : Declaration{ declaration.map }
-	{}
-
-	template<typename T>
-	inline DataDeclaration<T>::DataDeclaration (const Declaration && declaration) : Declaration{ std::move (declaration.map) }
-	{}
 
 	template<typename T>
 	inline bool DataDeclaration<T>::has_data () const
@@ -130,7 +148,7 @@ namespace SVDF
 	template<typename T>
 	inline void DataDeclaration<T>::parse_data (Parser & parser)
 	{
-		while (parser.is_in_data_section ())
+		while (parser.has_data ())
 		{
 			data.push_back (parser.next_value<T> ());
 		}
