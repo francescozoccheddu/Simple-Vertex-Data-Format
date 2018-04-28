@@ -330,3 +330,7 @@ ASALocalRun/
 
 # Filters
 *.vcxproj.filters
+
+# Ignore C4D framework
+Solution/SVDF/
+/Solution/_obj
