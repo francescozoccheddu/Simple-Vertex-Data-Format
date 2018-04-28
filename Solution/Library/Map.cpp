@@ -1,12 +1,10 @@
 #include "include/Map.hpp"
+
 #include "include/Grammar.hpp"
 #include "include/Encodable.hpp"
+#include "include/Utils.hpp"
 
 #include <map>
-#include <algorithm> 
-#include <functional> 
-#include <cctype>
-#include <locale>
 #include <ostream>
 #include <sstream>
 #include <string>
@@ -44,19 +42,9 @@ namespace SVDF
 
 	void _assert_valid_key (const Key & _key)
 	{
-		if (!_key.is_valid())
+		if (!_key.is_valid ())
 		{
-			Key cause_key = _key;
-			cause_key.erase (cause_key.begin (), std::find_if (cause_key.begin (), cause_key.end (), std::not1 (std::ptr_fun<int, int> (std::isspace))));
-			if (cause_key.size () > 0)
-			{
-				if (cause_key.size () > 10)
-				{
-					cause_key.resize (7);
-					cause_key.resize (10, '.');
-				}
-			}
-			throw std::runtime_error ("Invalid key '" + _key + "'");
+			throw std::runtime_error ("Invalid key '" + str_utils::user_preview (_key) + "'");
 		}
 	}
 
@@ -217,7 +205,7 @@ namespace SVDF
 
 	bool Key::is_valid (const std::string & _key)
 	{
-		if (_key.size () <= Grammar::max_key_length && !_key.empty())
+		if (_key.size () <= Grammar::max_key_length && !_key.empty ())
 		{
 			for (char c : _key)
 			{

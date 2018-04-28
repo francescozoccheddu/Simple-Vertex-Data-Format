@@ -24,6 +24,7 @@
     <ClCompile Include="Encodable.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Parser.cpp" />
+    <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Comment.hpp" />
@@ -32,6 +33,7 @@
     <ClInclude Include="include\Grammar.hpp" />
     <ClInclude Include="include\Map.hpp" />
     <ClInclude Include="include\Parser.hpp" />
+    <ClInclude Include="include\Utils.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
