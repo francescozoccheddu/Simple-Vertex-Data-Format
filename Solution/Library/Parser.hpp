@@ -21,10 +21,10 @@ namespace SVDF
 
 		Map next_map ();
 
-		template<typename T>
+		template<typename T, typename = typename enable_if_data_value_t<T> >
 		T next_value ();
 
-		template<typename T>
+		template<typename T, typename = typename enable_if_data_value_t<T> >
 		DataDeclaration<T> next_declaration ();
 
 		bool has_data () const;
@@ -74,11 +74,9 @@ namespace SVDF
 
 	};
 
-	template<typename T>
+	template<typename T, typename _EI>
 	inline T Parser::next_value ()
 	{
-		_SVDF_ASSERT_DATA_VALUE_TYPE
-
 		const BackupState backup{ make_backup () };
 		try
 		{
@@ -113,11 +111,9 @@ namespace SVDF
 		}
 	}
 
-	template<typename T>
+	template<typename T, typename _EI>
 	inline DataDeclaration<T> Parser::next_declaration ()
 	{
-		_SVDF_ASSERT_DATA_VALUE_TYPE
-
 		DataDeclaration<T> d{ next_map () };
 		d.parse_data (*this);
 		return d;

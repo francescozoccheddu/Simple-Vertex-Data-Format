@@ -11,23 +11,28 @@
 namespace SVDF
 {
 
-	template<typename> struct is_data_value_base : std::false_type {};
+	namespace _type_traits
+	{
 
-	template<> struct is_data_value_base<long double> : std::true_type {};
-	template<> struct is_data_value_base<double> : std::true_type {};
-	template<> struct is_data_value_base<float> : std::true_type {};
-	template<> struct is_data_value_base<signed long long> : std::true_type {};
-	template<> struct is_data_value_base<unsigned long long> : std::true_type {};
-	template<> struct is_data_value_base<signed long> : std::true_type {};
-	template<> struct is_data_value_base<unsigned long> : std::true_type {};
-	template<> struct is_data_value_base<signed int> : std::true_type {};
-	template<> struct is_data_value_base<unsigned int> : std::true_type {};
-	template<> struct is_data_value_base<signed short> : std::true_type {};
-	template<> struct is_data_value_base<unsigned short> : std::true_type {};
+		template<typename> struct is_data_value_base : std::false_type {};
 
-	template<typename T> struct is_data_value : is_data_value_base<std::remove_volatile_t<T>> {};
+		template<> struct is_data_value_base<long double> : std::true_type {};
+		template<> struct is_data_value_base<double> : std::true_type {};
+		template<> struct is_data_value_base<float> : std::true_type {};
+		template<> struct is_data_value_base<signed long long> : std::true_type {};
+		template<> struct is_data_value_base<unsigned long long> : std::true_type {};
+		template<> struct is_data_value_base<signed long> : std::true_type {};
+		template<> struct is_data_value_base<unsigned long> : std::true_type {};
+		template<> struct is_data_value_base<signed int> : std::true_type {};
+		template<> struct is_data_value_base<unsigned int> : std::true_type {};
+		template<> struct is_data_value_base<signed short> : std::true_type {};
+		template<> struct is_data_value_base<unsigned short> : std::true_type {};
 
-#define _SVDF_ASSERT_DATA_VALUE_TYPE static_assert(SVDF::is_data_value<T>::value, "T must be a non-const fundamental numeric type");
+	}
+
+	template<typename T> struct is_data_value : _type_traits::is_data_value_base<typename std::remove_volatile<T>::type> {};
+
+	template<typename T> using enable_if_data_value_t = typename std::enable_if<is_data_value<T>::value>::type;
 
 	class Parser;
 
@@ -56,10 +61,9 @@ namespace SVDF
 
 	};
 
-	template<typename T>
+	template<typename T, typename = typename enable_if_data_value_t<T> >
 	class DataDeclaration : public Declaration
 	{
-		_SVDF_ASSERT_DATA_VALUE_TYPE
 
 	public:
 
@@ -77,16 +81,19 @@ namespace SVDF
 
 		void parse_data (Parser & parser);
 
+
+	private:
+
 	};
 
-	template<typename T>
-	inline bool DataDeclaration<T>::has_data () const
+	template<typename T, typename _EI>
+	inline bool DataDeclaration<T, _EI>::has_data () const
 	{
 		return !data.empty ();
 	}
 
-	template<typename T>
-	inline void DataDeclaration<T>::encode (std::ostream & stream, Format format) const
+	template<typename T, typename _EI>
+	inline void DataDeclaration<T, _EI>::encode (std::ostream & stream, Format format) const
 	{
 		if (has_data ())
 		{
@@ -145,8 +152,8 @@ namespace SVDF
 
 	}
 
-	template<typename T>
-	inline void DataDeclaration<T>::parse_data (Parser & parser)
+	template<typename T, typename _EI>
+	inline void DataDeclaration<T, _EI>::parse_data (Parser & parser)
 	{
 		while (parser.has_data ())
 		{
