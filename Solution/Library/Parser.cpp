@@ -41,15 +41,12 @@ namespace SVDF
 
 	bool Parser::has_declarations ()
 	{
-		if (stream.good ())
-		{
-			consume_comment ();
-			return !stream.eof ();
-		}
-		else
-		{
-			return false;
-		}
+		return consume_comment ();
+	}
+
+	const std::istream & Parser::get_stream () const
+	{
+		return stream;
 	}
 
 	Map Parser::consume_map ()
@@ -215,7 +212,7 @@ namespace SVDF
 			}
 			else
 			{
-				throw make_error_rel ("Non-ASCII character encountered.", -1);
+				throw make_error_rel ("Unknown character encountered.", -1);
 			}
 		}
 		else
@@ -224,7 +221,7 @@ namespace SVDF
 		}
 	}
 
-	void Parser::consume_comment ()
+	bool Parser::consume_comment ()
 	{
 		bool comment_block = false;
 		while (true)
@@ -232,14 +229,13 @@ namespace SVDF
 			char c;
 			if (!try_peek (c))
 			{
-				consume ();
 				if (comment_block)
 				{
 					throw make_error_rel ("Unclosed comment at the end of the stream.", 0);
 				}
 				else
 				{
-					return;
+					return false;
 				}
 			}
 			else
@@ -250,7 +246,7 @@ namespace SVDF
 				}
 				else if (!comment_block && !Grammar::is_space_char (c))
 				{
-					return;
+					return true;
 				}
 
 				consume ();
@@ -287,7 +283,7 @@ namespace SVDF
 			}
 			else
 			{
-				throw make_error_rel ("Non-Ascii character encountered.", -1);
+				throw make_error_rel ("Unknown character encountered.", -1);
 			}
 		}
 	}
