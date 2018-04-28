@@ -1,6 +1,6 @@
-#include "Map.hpp"
-#include "Grammar.hpp"
-#include "Encodable.hpp"
+#include "include/Map.hpp"
+#include "include/Grammar.hpp"
+#include "include/Encodable.hpp"
 
 #include <map>
 #include <algorithm> 

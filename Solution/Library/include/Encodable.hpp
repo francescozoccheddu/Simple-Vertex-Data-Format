@@ -43,37 +43,10 @@ namespace SVDF
 		};
 
 		template <typename Iterator, typename = typename enable_if_encodable_pointer_iterator_t<Iterator>>
-		static void encode (std::ostream & stream, const Iterator & first, const Iterator & last, Format format = Format::NEWLINE)
-		{
-			for (auto it = first; it != last; ++it)
-			{
-				const Encodable * e = *it;
-				if (it != first)
-				{
-					switch (format)
-					{
-						case SVDF::Encodable::Format::COMPACT:
-							break;
-						case SVDF::Encodable::Format::SPACE:
-							stream << "\n";
-							break;
-						case SVDF::Encodable::Format::NEWLINE:
-						case SVDF::Encodable::Format::NEWLINE_TRUNCATE:
-							stream << "\n\n";
-							break;
-					}
-				}
-				e->encode (stream, format);
-			}
-		}
+		static void encode (std::ostream & stream, const Iterator & first, const Iterator & last, Format format = Format::NEWLINE);
 
 		template <typename Iterator, typename = typename enable_if_encodable_pointer_iterator_t<Iterator>>
-		static std::string encode (const Iterator & first, const Iterator & last, Format format = Format::NEWLINE)
-		{
-			std::ostringstream stream;
-			encode (stream, first, last, format);
-			return stream.str ();
-		}
+		static std::string encode (const Iterator & first, const Iterator & last, Format format = Format::NEWLINE);
 
 		virtual void encode (std::ostream & stream, Format format = Format::NEWLINE) const = 0;
 
@@ -85,18 +58,45 @@ namespace SVDF
 
 	};
 
-	template <typename T, typename = typename enable_if_encodable_pointer_t<T>>
-	std::ostream & operator << (std::ostream & stream, const std::vector<T*> & collection)
+	template <typename Iterator, typename _EI>
+	inline void Encodable::encode (std::ostream & stream, const Iterator & first, const Iterator & last, Format format)
 	{
-		Encodable::encode (stream, collection.begin(), collection.end());
-		return stream;
+		for (auto it = first; it != last; ++it)
+		{
+			const Encodable * e = *it;
+			if (it != first)
+			{
+				switch (format)
+				{
+					case SVDF::Encodable::Format::COMPACT:
+						break;
+					case SVDF::Encodable::Format::SPACE:
+						stream << "\n";
+						break;
+					case SVDF::Encodable::Format::NEWLINE:
+					case SVDF::Encodable::Format::NEWLINE_TRUNCATE:
+						stream << "\n\n";
+						break;
+				}
+			}
+			e->encode (stream, format);
+		}
 	}
 
-	template <typename T, typename = typename enable_if_encodable_pointer_t<T>>
-	std::ostream & operator << (std::ostream & stream, const std::list<T*> & collection)
+	template <typename Iterator, typename _EI>
+	inline std::string Encodable::encode (const Iterator & first, const Iterator & last, Format format)
 	{
-		Encodable::encode (stream, collection.begin (), collection.end ());
+		std::ostringstream stream;
+		encode (stream, first, last, format);
+		return stream.str ();
+	}
+
+	template <typename T, typename = enable_if_encodable_pointer_t<T>>
+	std::ostream & operator << (std::ostream & stream, const std::vector<T> & vector)
+	{
+		Encodable::encode (stream, vector.begin (), vector.end ());
 		return stream;
 	}
 
 }
+

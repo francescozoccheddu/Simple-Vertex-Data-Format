@@ -1,6 +1,6 @@
-#include "Parser.hpp"
+#include "include/Parser.hpp"
 
-#include "Grammar.hpp"
+#include "include/Grammar.hpp"
 
 #include <string>
 #include <cstdio>

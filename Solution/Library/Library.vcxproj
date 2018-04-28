@@ -19,19 +19,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Comment.hpp" />
-    <ClInclude Include="Declaration.hpp" />
-    <ClInclude Include="Encodable.hpp" />
-    <ClInclude Include="Grammar.hpp" />
-    <ClInclude Include="Map.hpp" />
-    <ClInclude Include="Parser.hpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="Comment.cpp" />
     <ClCompile Include="Declaration.cpp" />
     <ClCompile Include="Encodable.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Parser.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Comment.hpp" />
+    <ClInclude Include="include\Declaration.hpp" />
+    <ClInclude Include="include\Encodable.hpp" />
+    <ClInclude Include="include\Grammar.hpp" />
+    <ClInclude Include="include\Map.hpp" />
+    <ClInclude Include="include\Parser.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
