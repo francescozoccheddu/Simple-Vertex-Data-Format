@@ -34,8 +34,6 @@ namespace SVDF
 
 	template<typename T> using enable_if_data_value_t = typename std::enable_if<type_traits::is_data_value<T>::value>::type;
 
-	class Parser;
-
 	class Declaration : public Encodable
 	{
 
@@ -78,8 +76,6 @@ namespace SVDF
 		bool has_data () const override;
 
 		virtual void encode (std::ostream & stream, Format format = Format::NEWLINE) const override;
-
-		void parse_data (Parser & parser);
 
 	};
 
@@ -145,15 +141,6 @@ namespace SVDF
 		else
 		{
 			Declaration::encode (stream, format);
-		}
-	}
-
-	template<typename T, typename _EI>
-	inline void DataDeclaration<T, _EI>::parse_data (Parser & parser)
-	{
-		while (parser.has_data ())
-		{
-			data.push_back (parser.next_value<T> ());
 		}
 	}
 

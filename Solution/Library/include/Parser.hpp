@@ -3,6 +3,7 @@
 #include "Map.hpp"
 #include "Grammar.hpp"
 #include "Declaration.hpp"
+#include "Utils.hpp"
 
 #include <string>
 #include <fstream>
@@ -40,12 +41,23 @@ namespace SVDF
 
 		};
 
+		static constexpr int infinite{ -1 };
+
 		Parser (std::istream & stream);
 
 		Map next_map ();
 
 		template<typename T, typename = typename enable_if_data_value_t<T> >
 		T next_value ();
+
+		template<typename T, typename = typename enable_if_data_value_t<T> >
+		int next_data (T * data, int max);
+
+		template<typename T, typename = typename enable_if_data_value_t<T> >
+		int next_data (std::vector<T> & data, int max = infinite);
+
+		template<typename T, typename = typename enable_if_data_value_t<T> >
+		int next_data (DataDeclaration<T> & data, int max = infinite);
 
 		template<typename T, typename = typename enable_if_data_value_t<T> >
 		DataDeclaration<T> next_declaration ();
@@ -77,6 +89,15 @@ namespace SVDF
 		std::istream & stream;
 		State state;
 
+		template<typename T, typename = typename enable_if_data_value_t<T> >
+		T consume_value ();
+
+		template<typename T, typename = typename enable_if_data_value_t<T> >
+		int consume_data (T * data, int max);
+
+		template<typename T, typename = typename enable_if_data_value_t<T> >
+		int consume_data (std::vector<T> & data, int max);
+
 		Map consume_map ();
 
 		Key consume_key ();
@@ -95,67 +116,148 @@ namespace SVDF
 
 		void restore (const BackupState & backup);
 
-		Error make_error (const std::string message);
+		Error make_error_abs (const std::string & message, std::streampos pos);
+
+		Error make_error_rel (const std::string & message, int col_offset);
 
 	};
 
-	template<typename T, typename _EI>
+	template<typename T, typename>
+	inline T Parser::consume_value ()
+	{
+		consume_comment ();
+		std::streampos pos = stream.tellg ();
+		T val;
+		stream >> val;
+		if (!stream.fail ())
+		{
+			consume_comment ();
+			char c = consume ();
+			switch (c)
+			{
+				case Grammar::value_separator:
+					break;
+				case Grammar::declaration_suffix:
+					state.in_data = false;
+					break;
+				default:
+				{
+					std::stringstream ss;
+					ss << "Bad character '";
+					ss << str_utils::inline_space (c);
+					ss << "' for ";
+					ss << typeid(T).name ();
+					ss << " value. Expected value separator '";
+					ss << Grammar::value_separator;
+					ss << "' or declaration suffix '";
+					ss << Grammar::declaration_suffix;
+					ss << "'";
+					throw make_error_rel (ss.str (), -1);
+				}
+			}
+			return val;
+		}
+		else
+		{
+			std::stringstream ss;
+			ss << "Expected ";
+			ss << typeid(T).name ();
+			ss << " value";
+			throw make_error_abs (ss.str (), pos);
+		}
+	}
+
+
+	template<typename T, typename>
 	inline T Parser::next_value ()
 	{
 		const BackupState backup{ make_backup () };
 		try
 		{
-			consume_comment ();
-			T val;
-			stream >> val;
-			if (!stream.fail ())
-			{
-				consume_comment ();
-				char c = consume ();
-				switch (c)
-				{
-					case Grammar::value_separator:
-						break;
-					case Grammar::declaration_suffix:
-						state.in_data = false;
-						break;
-					default:
-					{
-						std::stringstream ss;
-						ss << "Expected ";
-						ss << typeid(T).name ();
-						ss << " value followed by value separator '";
-						ss << Grammar::value_separator;
-						ss << "' or declaration suffix '";
-						ss << Grammar::declaration_suffix;
-						ss << "'";
-						throw make_error (ss.str());
-					}
-				}
-				return val;
-			}
-			else
-			{
-				std::stringstream ss;
-				ss << "Expected ";
-				ss << typeid(T).name ();
-				ss << " value";
-				throw make_error (ss.str ());
-			}
+			return consume_value<T> ();
 		}
-		catch (std::logic_error &)
+		catch (Error &)
 		{
 			restore (backup);
 			throw;
 		}
 	}
 
-	template<typename T, typename _EI>
+	template<typename T, typename>
+	inline int Parser::consume_data (T * _data, int _max)
+	{
+		int count = 0;
+		while (has_data () && (_max == infinite || count < _max))
+		{
+			_data[count] = consume_value<T> ();
+			count++;
+		}
+		return count;
+	}
+
+	template<typename T, typename>
+	inline int Parser::consume_data (std::vector<T> & _data, int _max)
+	{
+		int count = 0;
+		while (has_data () && (_max == infinite || count < _max))
+		{
+			_data.push_back(consume_value<T> ());
+			count++;
+		}
+		return count;
+	}
+
+	template<typename T, typename>
+	inline int Parser::next_data (T * _data, int _max)
+	{
+		BackupState backup{ make_backup () };
+		try
+		{
+			return consume_data (_data, _max);
+		}
+		catch (Error &)
+		{
+			restore (backup);
+			throw;
+		}
+	}
+
+	template<typename T, typename>
+	inline int Parser::next_data (std::vector<T>& _data, int _max)
+	{
+		BackupState backup{ make_backup () };
+		try
+		{
+			return consume_data (_data, _max);
+		}
+		catch (Error &)
+		{
+			restore (backup);
+			throw;
+		}
+	}
+
+	template<typename T, typename>
+	inline int Parser::next_data (DataDeclaration<T>& _data, int _max)
+	{
+		return next_data (_data.data, _max);
+	}
+
+	template<typename T, typename>
 	inline DataDeclaration<T> Parser::next_declaration ()
 	{
-		DataDeclaration<T> d{ next_map () };
-		d.parse_data (*this);
-		return d;
+		BackupState backup{ make_backup () };
+		try
+		{
+			DataDeclaration<T> d{ consume_map () };
+			consume_data (d.data, infinite);
+			return d;
+		}
+		catch (Error &)
+		{
+			restore (backup);
+			throw;
+		}
 	}
 
 	class FileParser : public Parser

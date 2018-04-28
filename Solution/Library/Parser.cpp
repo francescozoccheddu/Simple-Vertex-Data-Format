@@ -20,29 +20,9 @@ namespace SVDF
 		const BackupState backup{ make_backup () };
 		try
 		{
-			Map map = consume_map ();
-			char c = consume ();
-			if (c == Grammar::data_prefix)
-			{
-				state.in_data = true;
-				return map;
-			}
-			else if (c == Grammar::declaration_suffix)
-			{
-				return map;
-			}
-			else
-			{
-				std::stringstream ss;
-				ss << "Expected data prefix '";
-				ss << Grammar::data_prefix;
-				ss << "' or declaration suffix '";
-				ss << Grammar::declaration_suffix;
-				ss << "'";
-				throw make_error (ss.str());
-			}
+			return consume_map ();
 		}
-		catch (std::logic_error &)
+		catch (Error &)
 		{
 			restore (backup);
 			throw;
@@ -81,15 +61,17 @@ namespace SVDF
 			char pc = peek ();
 			if (pc == Grammar::string_entry_prefix || pc == Grammar::int_entry_prefix || pc == Grammar::float_entry_prefix)
 			{
-				stream.get ();
+				consume ();
+				consume_comment ();
+				std::streampos pos = stream.tellg ();
 				Key key = consume_key ();
 				if (map.has (key))
 				{
 					std::stringstream ss;
-					ss << "Duplicated key '";
+					ss << "Error while parsing map. Duplicated key '";
 					ss << str_utils::user_preview (key);
-					ss << "'";
-					throw make_error (ss.str());
+					ss << "'.";
+					throw make_error_abs (ss.str (), pos);
 				}
 				consume_comment ();
 				switch (pc)
@@ -107,12 +89,12 @@ namespace SVDF
 								if (value.size () > Grammar::max_string_length)
 								{
 									std::stringstream ss;
-									ss << "String value '";
+									ss << "Error while parsing map string entry value '";
 									ss << str_utils::user_preview (value);
-									ss << "' size exceeds ";
+									ss << "'. String value size exceeds ";
 									ss << Grammar::max_string_length;
-									ss << " characters";
-									throw make_error (ss.str ());
+									ss << " characters.";
+									throw make_error_rel (ss.str (), -1);
 								}
 							}
 							else
@@ -120,17 +102,9 @@ namespace SVDF
 								std::stringstream ss;
 								ss << "Illegal character '";
 								ss << str_utils::inline_space (c);
-								ss << "' in string value";
-								throw make_error (ss.str ());
+								ss << "' encountered while parsing map string entry value.";
+								throw make_error_rel (ss.str (), -1);
 							}
-						}
-						if (!value.is_valid ())
-						{
-							std::stringstream ss;
-							ss << "Invalid key '";
-							ss << str_utils::user_preview (key);
-							ss << "'";
-							throw make_error (ss.str ());
 						}
 						map.string_map.emplace (key, value);
 					}
@@ -153,7 +127,35 @@ namespace SVDF
 			}
 			else
 			{
-				return map;
+				char c = consume ();
+				if (c == Grammar::data_prefix)
+				{
+					state.in_data = true;
+					return map;
+				}
+				else if (c == Grammar::declaration_suffix)
+				{
+					return map;
+				}
+				else
+				{
+					std::stringstream ss;
+					ss << "Bad character '";
+					ss << str_utils::inline_space (c);
+					ss << "' encountered while parsing map." << std::endl;
+					ss << "Expected map key prefixes '";
+					ss << Grammar::string_entry_prefix;
+					ss << "', '";
+					ss << Grammar::int_entry_prefix;
+					ss << "', or '";
+					ss << Grammar::float_entry_prefix;
+					ss << "', data prefix '";
+					ss << Grammar::data_prefix;
+					ss << "' or declaration suffix '";
+					ss << Grammar::declaration_suffix;
+					ss << "'.";
+					throw make_error_rel (ss.str (), -1);
+				}
 			}
 		}
 	}
@@ -164,40 +166,36 @@ namespace SVDF
 		consume_comment ();
 		while (Grammar::is_key_char (peek ()))
 		{
-			key += stream.get ();
+			key += consume ();
 			if (key.size () > Grammar::max_key_length)
 			{
 				std::stringstream ss;
-				ss << "Key '";
+				ss << "Error while parsing map entry key '";
 				ss << str_utils::user_preview (key);
-				ss << "' size exceeds ";
+				ss << "'." << std::endl;
+				ss << "Key size exceeds ";
 				ss << Grammar::max_string_length;
-				ss << " characters";
-				throw make_error (ss.str ());
+				ss << " characters.";
+				throw make_error_rel (ss.str (), -1);
 			}
 		}
 		consume_comment ();
 		consume (Grammar::key_suffix);
-		if (!key.is_valid ())
-		{
-			std::stringstream ss;
-			ss << "Invalid key '";
-			ss << str_utils::user_preview (key);
-			ss << "'";
-			throw make_error (ss.str ());
-		}
 		return key;
 	}
 
 	void Parser::consume (char _c)
 	{
-		if (consume () != _c)
+		char c = consume ();
+		if (c != _c)
 		{
 			std::stringstream ss;
-			ss << "Expected '";
+			ss << "Bad character '";
+			ss << str_utils::inline_space (c);
+			ss << "' encountered. Expected '";
 			ss << _c;
-			ss << "' character";
-			throw make_error (ss.str ());
+			ss << "' character.";
+			throw make_error_rel (ss.str (), -1);
 		}
 	}
 
@@ -206,11 +204,23 @@ namespace SVDF
 		int c = stream.get ();
 		if (c != EOF)
 		{
-			return static_cast<char>(c);
+			if (c > 0 && c < 256)
+			{
+				if (c == '\n')
+				{
+					state.current_line++;
+					state.last_newline = stream.tellg ();
+				}
+				return static_cast<char>(c);
+			}
+			else
+			{
+				throw make_error_rel ("Non-ASCII character encountered.", -1);
+			}
 		}
 		else
 		{
-			throw make_error ("Unexpected end of stream");
+			throw make_error_rel ("Unexpected end of the stream.", 0);
 		}
 	}
 
@@ -222,10 +232,10 @@ namespace SVDF
 			char c;
 			if (!try_peek (c))
 			{
-				stream.get ();
+				consume ();
 				if (comment_block)
 				{
-					throw make_error ("Unclosed comment at end of stream");
+					throw make_error_rel ("Unclosed comment at the end of the stream.", 0);
 				}
 				else
 				{
@@ -238,19 +248,12 @@ namespace SVDF
 				{
 					comment_block = !comment_block;
 				}
-				else if (comment_block || Grammar::is_space_char (c))
-				{
-					if (c == '\n')
-					{
-						state.current_line++;
-						state.last_newline = stream.tellg ();
-					}
-				}
-				else
+				else if (!comment_block && !Grammar::is_space_char (c))
 				{
 					return;
 				}
-				stream.get ();
+
+				consume ();
 			}
 		}
 	}
@@ -264,7 +267,7 @@ namespace SVDF
 		}
 		else
 		{
-			throw make_error ("Unexpected end of stream");
+			throw make_error_rel ("Unexpected end of the stream.", 0);
 		}
 	}
 
@@ -277,8 +280,15 @@ namespace SVDF
 		}
 		else
 		{
-			_out = c;
-			return true;
+			if (c > 0 && c < 256)
+			{
+				_out = c;
+				return true;
+			}
+			else
+			{
+				throw make_error_rel ("Non-Ascii character encountered.", -1);
+			}
 		}
 	}
 
@@ -297,16 +307,21 @@ namespace SVDF
 		}
 	}
 
-	Parser::Error Parser::make_error (const std::string _message)
+	Parser::Error Parser::make_error_abs (const std::string & _message, std::streampos _pos)
 	{
 		int line{ state.current_line };
 		int column{ Error::unknown_column };
-		std::streamoff offset = stream.tellg () - state.last_newline;
+		std::streamoff offset = _pos - state.last_newline;
 		if (offset >= 0)
 		{
-			column = offset;
+			column = static_cast<int>(offset);
 		}
 		return Error{ _message, line, column };
+	}
+
+	Parser::Error Parser::make_error_rel (const std::string & _message, int _col_offs)
+	{
+		return make_error_abs (_message, stream.tellg () + static_cast<std::streampos>(_col_offs));
 	}
 
 	FileParser::FileParser () : Parser{ file }
@@ -350,7 +365,7 @@ namespace SVDF
 		if (column != Error::unknown_column)
 		{
 			ss << ", column ";
-			ss << column;
+			ss << (column + 1);
 		}
 		ss << ":" << std::endl;
 		ss << what ();
