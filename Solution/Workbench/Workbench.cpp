@@ -22,7 +22,7 @@ int main ()
 			v.push_back (d);
 		}
 
-		Encodable::encode (std::cout, v.begin (), v.end ());
+		std::cout << v << std::endl;
 
 	}
 	else

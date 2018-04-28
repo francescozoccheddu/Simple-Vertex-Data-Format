@@ -11,7 +11,7 @@
 namespace SVDF
 {
 
-	namespace _type_traits
+	namespace type_traits
 	{
 
 		template<typename> struct is_data_value_base : std::false_type {};
@@ -28,11 +28,11 @@ namespace SVDF
 		template<> struct is_data_value_base<signed short> : std::true_type {};
 		template<> struct is_data_value_base<unsigned short> : std::true_type {};
 
+		template<typename T> struct is_data_value : is_data_value_base<typename std::remove_volatile<T>::type> {};
+
 	}
 
-	template<typename T> struct is_data_value : _type_traits::is_data_value_base<typename std::remove_volatile<T>::type> {};
-
-	template<typename T> using enable_if_data_value_t = typename std::enable_if<is_data_value<T>::value>::type;
+	template<typename T> using enable_if_data_value_t = typename std::enable_if<type_traits::is_data_value<T>::value>::type;
 
 	class Parser;
 
