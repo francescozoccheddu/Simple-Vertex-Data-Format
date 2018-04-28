@@ -13,24 +13,24 @@ int main ()
 {
 	FileParser p{ "example.svdf" };
 
-	if (p.is_open())
+	if (p.is_open ())
 	{
 		std::vector<Encodable*> document;
 
 		document.push_back (new Comment{ "Some comment" });
 
-		while (p.has_declarations ())
+		try
 		{
-			try
+			while (p.has_declarations ())
 			{
-				DataDeclaration<float> * d = new DataDeclaration<float>{ p.next_declaration<float>() };
+				DataDeclaration<float> * d = new DataDeclaration<float>{ p.next_declaration<float> () };
 				document.push_back (d);
 			}
-			catch (Parser::Error & error)
-			{
-				std::cout << std::endl << error.where_and_what () << std::endl;
-				std::cin.ignore ();
-			}
+		}
+		catch (Parser::Error & error)
+		{
+			std::cout << std::endl << error.where_and_what () << std::endl;
+			std::cin.ignore ();
 		}
 
 		std::cout << "Re-encoded document:" << std::endl << std::endl;

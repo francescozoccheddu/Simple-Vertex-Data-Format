@@ -68,6 +68,8 @@ namespace SVDF
 
 		bool has_declarations ();
 
+		const std::istream & get_stream () const;
+
 		virtual ~Parser () = default;
 
 	private:
@@ -106,7 +108,7 @@ namespace SVDF
 
 		char consume ();
 
-		void consume_comment ();
+		bool consume_comment ();
 
 		char peek ();
 
@@ -151,7 +153,7 @@ namespace SVDF
 					ss << Grammar::value_separator;
 					ss << "' or declaration suffix '";
 					ss << Grammar::declaration_suffix;
-					ss << "'";
+					ss << "'.";
 					throw make_error_rel (ss.str (), -1);
 				}
 			}
@@ -160,9 +162,9 @@ namespace SVDF
 		else
 		{
 			std::stringstream ss;
-			ss << "Expected ";
+			ss << "Value parsing failed. Expected ";
 			ss << typeid(T).name ();
-			ss << " value";
+			ss << " value.";
 			throw make_error_abs (ss.str (), pos);
 		}
 	}
