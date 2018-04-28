@@ -11,7 +11,6 @@ using namespace SVDF;
 
 int main ()
 {
-
 	FileParser p{ "example.svdf" };
 
 	if (p.is_open())

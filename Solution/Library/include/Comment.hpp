@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Encodable.hpp"
+
 #include <string>
 
 namespace SVDF

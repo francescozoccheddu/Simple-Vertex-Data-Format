@@ -8,6 +8,8 @@
 #include <fstream>
 #include <istream>
 #include <sstream>
+#include <stdexcept>
+
 
 namespace SVDF
 {
@@ -16,6 +18,27 @@ namespace SVDF
 	{
 
 	public:
+
+		class Error : public std::runtime_error
+		{
+
+		public:
+
+			static constexpr int unknown_column{ -1 };
+
+			const int line;
+			const int column;
+			Error (const std::string & message, int line, int column);
+
+			const std::string & where_and_what () const;
+
+		private:
+
+			const std::string message;
+
+			std::string make_message () const;
+
+		};
 
 		Parser (std::istream & stream);
 
@@ -51,7 +74,7 @@ namespace SVDF
 			std::streampos pos;
 		};
 
-		std::istream & _stream;
+		std::istream & stream;
 		State state;
 
 		Map consume_map ();
@@ -72,6 +95,8 @@ namespace SVDF
 
 		void restore (const BackupState & backup);
 
+		Error make_error (const std::string message);
+
 	};
 
 	template<typename T, typename _EI>
@@ -82,8 +107,8 @@ namespace SVDF
 		{
 			consume_comment ();
 			T val;
-			_stream >> val;
-			if (!_stream.fail ())
+			stream >> val;
+			if (!stream.fail ())
 			{
 				consume_comment ();
 				char c = consume ();
@@ -95,13 +120,25 @@ namespace SVDF
 						state.in_data = false;
 						break;
 					default:
-						throw std::logic_error ("Expected value separator or data suffix");
+					{
+						std::stringstream ss;
+						ss << "Expected value separator '";
+						ss << Grammar::value_separator;
+						ss << "' or declaration suffix '";
+						ss << Grammar::declaration_suffix;
+						ss << "'";
+						throw make_error (ss.str());
+					}
 				}
 				return val;
 			}
 			else
 			{
-				throw std::logic_error ("Value parse failed");
+				std::stringstream ss;
+				ss << "Expected ";
+				ss << typeid(T).name ();
+				ss << " value";
+				throw make_error (ss.str ());
 			}
 		}
 		catch (std::logic_error &)
@@ -137,7 +174,7 @@ namespace SVDF
 	private:
 
 		std::ifstream file;
-	
+
 	};
 
 	class StringParser : public Parser
@@ -153,6 +190,6 @@ namespace SVDF
 
 	};
 
-	// TODO Exceptions
+
 
 }
