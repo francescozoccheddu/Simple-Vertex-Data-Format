@@ -2,9 +2,6 @@
 
 #include <cctype>
 #include <string>
-#include <cstdio>
-#include <cstdarg>
-#include <sstream>
 
 namespace SVDF
 {
@@ -14,7 +11,7 @@ namespace SVDF
 
 		std::string user_preview (const std::string & _string)
 		{
-			static constexpr int length{ 10 };
+            static constexpr int length{ 10 };
 			std::string str = _string.substr (0, length);
 			if (str.size () == length)
 			{
@@ -24,7 +21,7 @@ namespace SVDF
 					str[d] = '.';
 				}
 			}
-			for (int c = 0; c < str.size (); c++)
+            for (unsigned int c = 0; c < str.size (); c++)
 			{
 				str[c] = inline_space (str[c]);
 			}

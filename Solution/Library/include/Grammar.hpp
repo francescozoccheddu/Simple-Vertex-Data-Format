@@ -22,7 +22,7 @@ namespace SVDF
 		constexpr char key_alphabet[]{ "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_." };
 		constexpr char string_alphabet[]{ "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_.,!?^$%&/()[]{}+-*\\ " };
 
-		constexpr bool is_space_char (char c)
+                inline bool is_space_char (char c)
 		{
 			for (char space_char : space_alphabet)
 			{
@@ -34,7 +34,7 @@ namespace SVDF
 			return false;
 		}
 
-		constexpr bool is_key_char (char c)
+                inline bool is_key_char (char c)
 		{
 			for (char key_char : key_alphabet)
 			{
@@ -46,7 +46,7 @@ namespace SVDF
 			return false;
 		}
 
-		constexpr bool is_string_char (char c)
+                inline bool is_string_char (char c)
 		{
 			for (char string_char : string_alphabet)
 			{

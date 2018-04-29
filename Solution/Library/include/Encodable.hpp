@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ostream>
+#include <sstream>
 #include <vector>
 #include <string>
 #include <type_traits>
@@ -42,10 +43,10 @@ namespace SVDF
 			NEWLINE_TRUNCATE,
 		};
 
-		template <typename Iterator, typename = typename enable_if_encodable_pointer_iterator_t<Iterator>>
+                template <typename Iterator, typename = typename SVDF::enable_if_encodable_pointer_iterator_t<Iterator>>
 		static void encode (std::ostream & stream, const Iterator & first, const Iterator & last, Format format = Format::NEWLINE);
 
-		template <typename Iterator, typename = typename enable_if_encodable_pointer_iterator_t<Iterator>>
+                template <typename Iterator, typename = typename SVDF::enable_if_encodable_pointer_iterator_t<Iterator>>
 		static std::string encode (const Iterator & first, const Iterator & last, Format format = Format::NEWLINE);
 
 		virtual void encode (std::ostream & stream, Format format = Format::NEWLINE) const = 0;
@@ -86,7 +87,7 @@ namespace SVDF
 	template <typename Iterator, typename _EI>
 	inline std::string Encodable::encode (const Iterator & first, const Iterator & last, Format format)
 	{
-		std::ostringstream stream;
+                std::stringstream stream;
 		encode (stream, first, last, format);
 		return stream.str ();
 	}
