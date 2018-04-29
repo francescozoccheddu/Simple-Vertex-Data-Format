@@ -23,7 +23,7 @@ int main ()
 		{
 			while (p.has_declarations ())
 			{
-				DataDeclaration<float> * d = new DataDeclaration<float>{ p.next_declaration<float> () };
+                Encodable * d = new DataDeclaration<float>{ p.next_declaration<float> () };
 				document.push_back (d);
 			}
 		}
