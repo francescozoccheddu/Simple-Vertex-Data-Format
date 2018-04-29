@@ -6,7 +6,6 @@
 
 #include <type_traits>
 #include <ostream>
-#include <utility>
 
 namespace SVDF
 {
@@ -59,7 +58,7 @@ namespace SVDF
 
 	};
 
-        template<typename T, typename = typename SVDF::enable_if_data_value_t<T> >
+	template<typename T, typename = typename SVDF::enable_if_data_value_t<T> >
 	class DataDeclaration : public Declaration
 	{
 
