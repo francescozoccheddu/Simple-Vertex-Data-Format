@@ -3,6 +3,8 @@
 #include "include/Grammar.hpp"
 #include "include/Encodable.hpp"
 
+#include <string>
+#include <ostream>
 #include <stdexcept>
 
 namespace SVDF
@@ -13,27 +15,27 @@ namespace SVDF
 		if (is_valid ())
 		{
 
-		if (!empty ())
-		{
-			bool space = false;
-
-			switch (_format)
+			if (!empty ())
 			{
-				case Encodable::Format::COMPACT:
-					break;
-				case Format::SPACE:
-				case Format::NEWLINE:
-				case Format::NEWLINE_TRUNCATE:
-					space = true;
-					break;
+				bool space = false;
+
+				switch (_format)
+				{
+					case Encodable::Format::COMPACT:
+						break;
+					case Format::SPACE:
+					case Format::NEWLINE:
+					case Format::NEWLINE_TRUNCATE:
+						space = true;
+						break;
+				}
+
+				_stream << Grammar::comment_prefix;
+				if (space) { _stream << " "; }
+				_stream << c_str ();
+				if (space) { _stream << " "; }
+				_stream << Grammar::comment_suffix;
 			}
-			
-			_stream << Grammar::comment_prefix;
-			if (space) { _stream << " "; }
-			_stream << c_str ();
-			if (space) { _stream << " "; }
-			_stream << Grammar::comment_suffix;
-		}
 		}
 		else
 		{

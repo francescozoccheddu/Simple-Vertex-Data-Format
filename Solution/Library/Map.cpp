@@ -6,7 +6,6 @@
 
 #include <map>
 #include <ostream>
-#include <sstream>
 #include <string>
 
 namespace SVDF

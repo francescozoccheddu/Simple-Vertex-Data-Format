@@ -7,19 +7,19 @@
 namespace SVDF
 {
 
-class Comment : public Encodable, public std::string
-{
+	class Comment : public Encodable, public std::string
+	{
 
-public:
+	public:
 
-	using std::string::string;
-	
-	virtual void encode (std::ostream & stream, Format format = Format::NEWLINE) const override;
+		using std::string::string;
 
-	bool is_valid () const;
+		virtual void encode (std::ostream & stream, Format format = Format::NEWLINE) const override;
 
-	static bool is_valid (const std::string & comment);
+		bool is_valid () const;
 
-};
+		static bool is_valid (const std::string & comment);
+
+	};
 
 }

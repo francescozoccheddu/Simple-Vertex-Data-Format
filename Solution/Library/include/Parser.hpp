@@ -48,19 +48,19 @@ namespace SVDF
 
 		Map next_map ();
 
-                template<typename T, typename = typename SVDF::enable_if_data_value_t<T> >
+		template<typename T, typename = typename SVDF::enable_if_data_value_t<T> >
 		T next_value ();
 
-                template<typename T, typename = typename SVDF::enable_if_data_value_t<T> >
+		template<typename T, typename = typename SVDF::enable_if_data_value_t<T> >
 		int next_data (T * data, int max);
 
-                template<typename T, typename = typename SVDF::enable_if_data_value_t<T> >
+		template<typename T, typename = typename SVDF::enable_if_data_value_t<T> >
 		int next_data (std::vector<T> & data, int max = infinite);
 
-                template<typename T, typename = typename SVDF::enable_if_data_value_t<T> >
+		template<typename T, typename = typename SVDF::enable_if_data_value_t<T> >
 		int next_data (DataDeclaration<T> & data, int max = infinite);
 
-                template<typename T, typename = typename SVDF::enable_if_data_value_t<T> >
+		template<typename T, typename = typename SVDF::enable_if_data_value_t<T> >
 		DataDeclaration<T> next_declaration ();
 
 		bool has_data () const;
@@ -92,13 +92,13 @@ namespace SVDF
 		std::istream & stream;
 		State state;
 
-                template<typename T, typename = typename SVDF::enable_if_data_value_t<T> >
+		template<typename T, typename = typename SVDF::enable_if_data_value_t<T> >
 		T consume_value ();
 
-                template<typename T, typename = typename SVDF::enable_if_data_value_t<T> >
+		template<typename T, typename = typename SVDF::enable_if_data_value_t<T> >
 		int consume_data (T * data, int max);
 
-                template<typename T, typename = typename SVDF::enable_if_data_value_t<T> >
+		template<typename T, typename = typename SVDF::enable_if_data_value_t<T> >
 		int consume_data (std::vector<T> & data, int max);
 
 		Map consume_map ();
@@ -145,7 +145,7 @@ namespace SVDF
 					break;
 				default:
 				{
-					std::stringstream ss;
+					std::ostringstream ss;
 					ss << "Bad character '";
 					ss << str_utils::inline_space (c);
 					ss << "' for ";
@@ -162,7 +162,7 @@ namespace SVDF
 		}
 		else
 		{
-			std::stringstream ss;
+			std::ostringstream ss;
 			ss << "Value parsing failed. Expected ";
 			ss << typeid(T).name ();
 			ss << " value.";
@@ -204,7 +204,7 @@ namespace SVDF
 		int count = 0;
 		while (has_data () && (_max == infinite || count < _max))
 		{
-			_data.push_back(consume_value<T> ());
+			_data.push_back (consume_value<T> ());
 			count++;
 		}
 		return count;

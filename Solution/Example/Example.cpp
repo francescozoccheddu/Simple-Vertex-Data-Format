@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <vector>
 
@@ -11,9 +10,9 @@ using namespace SVDF;
 
 int main ()
 {
-	FileParser p{ "example.svdf" };
+	FileParser parser{ "example.svdf" };
 
-	if (p.is_open ())
+	if (parser.is_open ())
 	{
 		std::vector<Encodable*> document;
 
@@ -21,10 +20,10 @@ int main ()
 
 		try
 		{
-			while (p.has_declarations ())
+			while (parser.has_declarations ())
 			{
-                Encodable * d = new DataDeclaration<float>{ p.next_declaration<float> () };
-				document.push_back (d);
+				Encodable * encodable = new DataDeclaration<float>{ parser.next_declaration<float> () };
+				document.push_back (encodable);
 			}
 		}
 		catch (Parser::Error & error)
@@ -36,9 +35,9 @@ int main ()
 		std::cout << "Re-encoded document:" << std::endl << std::endl;
 		std::cout << document << std::endl;
 
-		for (Encodable * e : document)
+		for (Encodable * encodable : document)
 		{
-			delete e;
+			delete encodable;
 		}
 	}
 	else

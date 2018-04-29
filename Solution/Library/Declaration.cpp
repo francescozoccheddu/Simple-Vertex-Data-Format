@@ -2,6 +2,7 @@
 
 #include "include/Encodable.hpp"
 #include "include/Grammar.hpp"
+#include "include/Map.hpp"
 
 #include <ostream>
 #include <utility>

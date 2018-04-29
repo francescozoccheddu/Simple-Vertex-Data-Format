@@ -64,7 +64,7 @@ namespace SVDF
 				Key key = consume_key ();
 				if (map.has (key))
 				{
-					std::stringstream ss;
+					std::ostringstream ss;
 					ss << "Error while parsing map. Duplicated key '";
 					ss << str_utils::user_preview (key);
 					ss << "'.";
@@ -85,7 +85,7 @@ namespace SVDF
 								value += c;
 								if (value.size () > Grammar::max_string_length)
 								{
-									std::stringstream ss;
+									std::ostringstream ss;
 									ss << "Error while parsing map string entry value '";
 									ss << str_utils::user_preview (value);
 									ss << "'. String value size exceeds ";
@@ -96,7 +96,7 @@ namespace SVDF
 							}
 							else
 							{
-								std::stringstream ss;
+								std::ostringstream ss;
 								ss << "Illegal character '";
 								ss << str_utils::inline_space (c);
 								ss << "' encountered while parsing map string entry value.";
@@ -136,7 +136,7 @@ namespace SVDF
 				}
 				else
 				{
-					std::stringstream ss;
+					std::ostringstream ss;
 					ss << "Bad character '";
 					ss << str_utils::inline_space (c);
 					ss << "' encountered while parsing map." << std::endl;
@@ -166,7 +166,7 @@ namespace SVDF
 			key += consume ();
 			if (key.size () > Grammar::max_key_length)
 			{
-				std::stringstream ss;
+				std::ostringstream ss;
 				ss << "Error while parsing map entry key '";
 				ss << str_utils::user_preview (key);
 				ss << "'." << std::endl;
@@ -186,7 +186,7 @@ namespace SVDF
 		char c = consume ();
 		if (c != _c)
 		{
-			std::stringstream ss;
+			std::ostringstream ss;
 			ss << "Bad character '";
 			ss << str_utils::inline_space (c);
 			ss << "' encountered. Expected '";
@@ -355,7 +355,7 @@ namespace SVDF
 
 	std::string Parser::Error::make_message () const
 	{
-		std::stringstream ss;
+		std::ostringstream ss;
 		ss << "Parse error occurred at line ";
 		ss << (line + 1);
 		if (column != Error::unknown_column)
