@@ -1,6 +1,6 @@
 {
 	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-	"name": "svdf",
+	"scopeName": "text.svdf",
 	"patterns": [
 		{
 			"include": "#comment"
@@ -106,6 +106,5 @@
 				]
 			}]
 		}
-	},
-	"scopeName": "text.svdf"
+	}
 }

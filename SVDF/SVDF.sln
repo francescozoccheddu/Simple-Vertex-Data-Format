@@ -7,13 +7,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Library", "Library\Library.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Example", "Example\Example.vcxproj", "{F2D9419C-662B-4181-85FA-BDF84161AD0E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "C4D Exporter", "C4D Exporter\C4D Exporter.vcxproj", "{1CBD24D8-7560-465A-B487-850D75CE6DBF}"
-	ProjectSection(ProjectDependencies) = postProject
-		{69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3} = {69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cinema.framework", "..\..\..\..\..\..\..\Program Files\MAXON\Cinema 4D R19\frameworks\cinema.framework\project\cinema.framework.vcxproj", "{69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -98,60 +91,6 @@ Global
 		{F2D9419C-662B-4181-85FA-BDF84161AD0E}.UnityDebug|x64.Build.0 = Debug|x64
 		{F2D9419C-662B-4181-85FA-BDF84161AD0E}.UnityDebug|x86.ActiveCfg = Debug|Win32
 		{F2D9419C-662B-4181-85FA-BDF84161AD0E}.UnityDebug|x86.Build.0 = Debug|Win32
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.Debug|x64.ActiveCfg = Debug|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.Debug|x64.Build.0 = Debug|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.Debug|x86.ActiveCfg = Debug|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.Intel|x64.ActiveCfg = Release|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.Intel|x64.Build.0 = Release|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.Intel|x86.ActiveCfg = Release|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.Intel|x86.Build.0 = Release|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.LibDebug|x64.ActiveCfg = Debug|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.LibDebug|x64.Build.0 = Debug|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.LibDebug|x86.ActiveCfg = Release|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.LibDebug|x86.Build.0 = Release|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.LibIntel|x64.ActiveCfg = Release|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.LibIntel|x64.Build.0 = Release|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.LibIntel|x86.ActiveCfg = Release|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.LibIntel|x86.Build.0 = Release|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.LibRelease|x64.ActiveCfg = Release|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.LibRelease|x64.Build.0 = Release|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.LibRelease|x86.ActiveCfg = Release|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.LibRelease|x86.Build.0 = Release|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.LibUnityDebug|x64.ActiveCfg = Debug|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.LibUnityDebug|x64.Build.0 = Debug|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.LibUnityDebug|x86.ActiveCfg = Release|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.LibUnityDebug|x86.Build.0 = Release|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.Release|x64.ActiveCfg = Release|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.Release|x64.Build.0 = Release|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.Release|x86.ActiveCfg = Release|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.UnityDebug|x64.ActiveCfg = Debug|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.UnityDebug|x64.Build.0 = Debug|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.UnityDebug|x86.ActiveCfg = Release|x64
-		{1CBD24D8-7560-465A-B487-850D75CE6DBF}.UnityDebug|x86.Build.0 = Release|x64
-		{69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3}.Debug|x64.ActiveCfg = Debug|x64
-		{69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3}.Debug|x64.Build.0 = Debug|x64
-		{69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3}.Debug|x86.ActiveCfg = Debug|x64
-		{69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3}.Intel|x64.ActiveCfg = Intel|x64
-		{69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3}.Intel|x64.Build.0 = Intel|x64
-		{69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3}.Intel|x86.ActiveCfg = Intel|x64
-		{69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3}.LibDebug|x64.ActiveCfg = LibDebug|x64
-		{69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3}.LibDebug|x64.Build.0 = LibDebug|x64
-		{69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3}.LibDebug|x86.ActiveCfg = LibDebug|x64
-		{69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3}.LibIntel|x64.ActiveCfg = LibIntel|x64
-		{69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3}.LibIntel|x64.Build.0 = LibIntel|x64
-		{69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3}.LibIntel|x86.ActiveCfg = LibIntel|x64
-		{69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3}.LibRelease|x64.ActiveCfg = LibRelease|x64
-		{69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3}.LibRelease|x64.Build.0 = LibRelease|x64
-		{69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3}.LibRelease|x86.ActiveCfg = LibRelease|x64
-		{69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3}.LibUnityDebug|x64.ActiveCfg = LibUnityDebug|x64
-		{69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3}.LibUnityDebug|x64.Build.0 = LibUnityDebug|x64
-		{69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3}.LibUnityDebug|x86.ActiveCfg = LibUnityDebug|x64
-		{69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3}.Release|x64.ActiveCfg = Release|x64
-		{69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3}.Release|x64.Build.0 = Release|x64
-		{69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3}.Release|x86.ActiveCfg = Release|x64
-		{69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3}.UnityDebug|x64.ActiveCfg = UnityDebug|x64
-		{69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3}.UnityDebug|x64.Build.0 = UnityDebug|x64
-		{69BF9B7D-7EB2-7FC5-0009-38CB8C5CDEA3}.UnityDebug|x86.ActiveCfg = UnityDebug|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
