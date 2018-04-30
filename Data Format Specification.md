@@ -16,7 +16,7 @@
 
 ### Declaration
 + _map_ `;`
-+ _map_ `:` _list_  `;` 
++ _map_ `:` _data_  `;` 
 
 ### Map
 + _empty_
