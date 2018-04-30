@@ -19,7 +19,7 @@
         }],
         "grammars": [{
             "language": "svdf",
-            "scopeName": "source.svdf",
+            "scopeName": "text.svdf",
             "path": "./syntaxes/svdf.tmLanguage.json"
         }]
     }
