@@ -103,7 +103,7 @@ namespace SVDF
 
 		Map consume_map ();
 
-		Key consume_key ();
+		std::string consume_key ();
 
 		void consume (char c);
 

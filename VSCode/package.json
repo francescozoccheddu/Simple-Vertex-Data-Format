@@ -2,7 +2,7 @@
     "name": "svdf",
     "displayName": "Simple Vertex Data Format",
     "description": "Simple Vertex Data Format syntax highlighting support",
-    "version": "0.0.1",
+    "version": "0.1.1",
     "publisher": "francescozoccheddu",
     "engines": {
         "vscode": "^1.22.0"

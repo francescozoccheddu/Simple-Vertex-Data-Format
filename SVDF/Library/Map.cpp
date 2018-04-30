@@ -12,7 +12,7 @@ namespace SVDF
 {
 
 	template<typename T>
-	bool _get_string (const Key & _key, T & _out, const std::map<Key, T> & _map)
+	bool _get_string (const std::string & _key, T & _out, const std::map<std::string, T> & _map)
 	{
 		auto it = _map.find (_key);
 		if (it != _map.end ())
@@ -27,7 +27,7 @@ namespace SVDF
 	}
 
 	template<typename T, typename O1, typename O2>
-	bool _put (const Key & _key, T _value, std::map<Key, T> & _map, const std::map<Key, O1> & _other1, const std::map<Key, O2> & _other2)
+	bool _put (const std::string & _key, T _value, std::map<std::string, T> & _map, const std::map<std::string, O1> & _other1, const std::map<std::string, O2> & _other2)
 	{
 		if (!_other1.count (_key) && !_other2.count (_key))
 		{
@@ -39,16 +39,16 @@ namespace SVDF
 		}
 	}
 
-	void _assert_valid_key (const Key & _key)
+	void _assert_valid_key (const std::string & _key)
 	{
-		if (!_key.is_valid ())
+		if (!Map::is_key_valid (_key))
 		{
 			throw std::runtime_error ("Invalid key '" + str_utils::user_preview (_key) + "'");
 		}
 	}
 
 	template <typename T>
-	void _assert_valid_key_set (const std::map<Key, T> & _map)
+	void _assert_valid_key_set (const std::map<std::string, T> & _map)
 	{
 		for (auto entry : _map)
 		{
@@ -56,22 +56,22 @@ namespace SVDF
 		}
 	}
 
-	bool Map::get_string (const Key & _key, String & _out) const
+	bool Map::get_string (const std::string & _key, std::string & _out) const
 	{
 		return _get_string (_key, _out, string_map);
 	}
 
-	bool Map::get_int (const Key & _key, int & _out) const
+	bool Map::get_int (const std::string & _key, int & _out) const
 	{
 		return _get_string (_key, _out, int_map);
 	}
 
-	bool Map::get_float (const Key & _key, float & _out) const
+	bool Map::get_float (const std::string & _key, float & _out) const
 	{
 		return _get_string (_key, _out, float_map);
 	}
 
-	bool Map::get_type (const Key & _key, Type & _out) const
+	bool Map::get_type (const std::string & _key, Type & _out) const
 	{
 		if (string_map.count (_key))
 		{
@@ -92,42 +92,42 @@ namespace SVDF
 		return true;
 	}
 
-	bool Map::has (const Key & _key) const
+	bool Map::has (const std::string & _key) const
 	{
 		return string_map.count (_key) || int_map.count (_key) || float_map.count (_key);
 	}
 
-	bool Map::put_string (const Key & _key, const String & _value)
+	bool Map::put_string (const std::string & _key, const std::string & _value)
 	{
 		return _put (_key, _value, string_map, int_map, float_map);
 	}
 
-	bool Map::put_int (const Key & _key, int _value)
+	bool Map::put_int (const std::string & _key, int _value)
 	{
 		return _put (_key, _value, int_map, string_map, float_map);
 	}
 
-	bool Map::put_float (const Key & _key, float _value)
+	bool Map::put_float (const std::string & _key, float _value)
 	{
 		return _put (_key, _value, float_map, string_map, int_map);
 	}
 
-	bool Map::remove (const Key & _key)
+	bool Map::remove (const std::string & _key)
 	{
 		return string_map.erase (_key) || int_map.erase (_key) || float_map.erase (_key);
 	}
 
-	const std::map<Key, String>& Map::get_string_map () const
+	const std::map<std::string, std::string>& Map::get_string_map () const
 	{
 		return string_map;
 	}
 
-	const std::map<Key, int>& Map::get_int_map () const
+	const std::map<std::string, int>& Map::get_int_map () const
 	{
 		return int_map;
 	}
 
-	const std::map<Key, float>& Map::get_float_map () const
+	const std::map<std::string, float>& Map::get_float_map () const
 	{
 		return float_map;
 	}
@@ -197,12 +197,7 @@ namespace SVDF
 		}
 	}
 
-	bool Key::is_valid () const
-	{
-		return is_valid (*this);
-	}
-
-	bool Key::is_valid (const std::string & _key)
+	bool Map::is_key_valid (const std::string & _key)
 	{
 		if (_key.size () <= Grammar::max_key_length && !_key.empty ())
 		{
@@ -221,16 +216,11 @@ namespace SVDF
 		}
 	}
 
-	bool String::is_valid () const
+	bool Map::is_string_valid (const std::string & _string)
 	{
-		return is_valid (*this);
-	}
-
-	bool String::is_valid (const std::string & string)
-	{
-		if (string.size () <= Grammar::max_key_length)
+		if (_string.size () <= Grammar::max_string_length)
 		{
-			for (char c : string)
+			for (char c : _string)
 			{
 				if (!Grammar::is_string_char (c))
 				{

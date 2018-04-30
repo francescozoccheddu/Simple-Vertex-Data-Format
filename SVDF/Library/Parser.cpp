@@ -61,7 +61,7 @@ namespace SVDF
 				consume ();
 				consume_comment ();
 				std::streampos pos = stream.tellg ();
-				Key key = consume_key ();
+				std::string key = consume_key ();
 				if (map.has (key))
 				{
 					std::ostringstream ss;
@@ -75,7 +75,7 @@ namespace SVDF
 				{
 					case Grammar::string_entry_prefix:
 					{
-						String value;
+						std::string value;
 						consume (Grammar::string_value_prefix);
 						char c;
 						while ((c = consume ()) != Grammar::string_value_suffix)
@@ -88,7 +88,7 @@ namespace SVDF
 									std::ostringstream ss;
 									ss << "Error while parsing map string entry value '";
 									ss << str_utils::user_preview (value);
-									ss << "'. String value size exceeds ";
+									ss << "'. std::string value size exceeds ";
 									ss << Grammar::max_string_length;
 									ss << " characters.";
 									throw make_error_rel (ss.str (), -1);
@@ -157,9 +157,9 @@ namespace SVDF
 		}
 	}
 
-	Key Parser::consume_key ()
+	std::string Parser::consume_key ()
 	{
-		Key key;
+		std::string key;
 		consume_comment ();
 		while (Grammar::is_key_char (peek ()))
 		{
@@ -170,7 +170,7 @@ namespace SVDF
 				ss << "Error while parsing map entry key '";
 				ss << str_utils::user_preview (key);
 				ss << "'." << std::endl;
-				ss << "Key size exceeds ";
+				ss << "std::string size exceeds ";
 				ss << Grammar::max_string_length;
 				ss << " characters.";
 				throw make_error_rel (ss.str (), -1);

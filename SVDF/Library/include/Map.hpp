@@ -9,32 +9,6 @@
 namespace SVDF
 {
 
-	class Key : public std::string
-	{
-
-	public:
-
-		using std::string::string;
-
-		bool is_valid () const;
-
-		static bool is_valid (const std::string & key);
-
-	};
-
-	class String : public std::string
-	{
-
-	public:
-
-		using std::string::string;
-
-		bool is_valid () const;
-
-		static bool is_valid (const std::string & string);
-
-	};
-
 	class Parser;
 
 	class Map : public Encodable
@@ -47,29 +21,33 @@ namespace SVDF
 			STRING, INT, FLOAT
 		};
 
-		bool get_string (const Key & key, String & out) const;
+		static bool is_key_valid (const std::string & key);
 
-		bool get_int (const Key & key, int & out) const;
+		static bool is_string_valid (const std::string & string);
 
-		bool get_float (const Key & key, float & out) const;
+		bool get_string (const std::string & key, std::string & out) const;
 
-		bool get_type (const Key & key, Type & out) const;
+		bool get_int (const std::string & key, int & out) const;
 
-		bool has (const Key & key) const;
+		bool get_float (const std::string & key, float & out) const;
 
-		bool put_string (const Key & key, const String & value);
+		bool get_type (const std::string & key, Type & out) const;
 
-		bool put_int (const Key & key, int value);
+		bool has (const std::string & key) const;
 
-		bool put_float (const Key & key, float value);
+		bool put_string (const std::string & key, const std::string & value);
 
-		bool remove (const Key & key);
+		bool put_int (const std::string & key, int value);
 
-		const std::map<Key, String> & get_string_map () const;
+		bool put_float (const std::string & key, float value);
 
-		const std::map<Key, int> & get_int_map () const;
+		bool remove (const std::string & key);
 
-		const std::map<Key, float> & get_float_map () const;
+		const std::map<std::string, std::string> & get_string_map () const;
+
+		const std::map<std::string, int> & get_int_map () const;
+
+		const std::map<std::string, float> & get_float_map () const;
 
 		void encode (std::ostream & stream, Format format = Format::NEWLINE) const override;
 
@@ -77,9 +55,9 @@ namespace SVDF
 
 		friend class Parser;
 
-		std::map<Key, String> string_map;
-		std::map<Key, int> int_map;
-		std::map<Key, float> float_map;
+		std::map<std::string, std::string> string_map;
+		std::map<std::string, int> int_map;
+		std::map<std::string, float> float_map;
 
 	};
 
