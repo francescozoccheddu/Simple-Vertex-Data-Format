@@ -1,0 +1,26 @@
+{
+    "name": "svdf",
+    "displayName": "SimpleVertexDataFormat",
+    "description": "Simple Vertex Data Format",
+    "version": "0.0.1",
+    "publisher": "francescozoccheddu",
+    "engines": {
+        "vscode": "^1.22.0"
+    },
+    "categories": [
+        "Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "svdf",
+            "aliases": ["svdf", "svdf"],
+            "extensions": [".svdf"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "svdf",
+            "scopeName": "source.svdf",
+            "path": "./syntaxes/svdf.tmLanguage.json"
+        }]
+    }
+}
