@@ -334,3 +334,4 @@ ASALocalRun/
 # Ignore C4D framework
 Solution/SVDF/
 /Solution/_obj
+/C4D/_obj

@@ -1,7 +1,7 @@
 {
     "name": "svdf",
-    "displayName": "SimpleVertexDataFormat",
-    "description": "Simple Vertex Data Format",
+    "displayName": "Simple Vertex Data Format",
+    "description": "Simple Vertex Data Format syntax highlighting support",
     "version": "0.0.1",
     "publisher": "francescozoccheddu",
     "engines": {
@@ -13,7 +13,7 @@
     "contributes": {
         "languages": [{
             "id": "svdf",
-            "aliases": ["svdf", "svdf"],
+            "aliases": ["svdf"],
             "extensions": [".svdf"],
             "configuration": "./language-configuration.json"
         }],
