@@ -12,7 +12,7 @@
 	"repository": {
 		"comment": {
 			"patterns": [{
-				"name": "comment.block.svdf",
+				"name": "comment",
 				"begin": "<",
 				"end": ">"
 			}]
@@ -22,7 +22,7 @@
 				"begin": "(?=[?#$:])",
 				"end": ";",
 				"endCaptures": {
-					"0" : { "name" : "keyword.control.svdf" }
+					"0" : { "name" : "keyword.control" }
 				},
 				"patterns": [
 					{
@@ -45,7 +45,7 @@
 				"begin" : "[?#$]",
 				"end" : "(?==)",
 				"beginCaptures": {
-					"0" : { "name" : "keyword.operator.new.svdf" }
+					"0" : { "name" : "storage.type" }
 				},
 				"patterns": [
 					{
@@ -63,22 +63,22 @@
 				"begin" : "=",
 				"end" : "(?=[?#$:;])",
 				"beginCaptures": {
-					"0" : { "name" : "keyword.control.svdf" }
+					"0" : { "name" : "keyword.control" }
 				},
 				"patterns": [
 					{
 						"include": "#comment"
 					},
 					{
-						"contentName" : "string.quoted.svdf",
+						"contentName" : "string",
 						"begin" : "\"",
 						"end" : "\"",
 						"captures": {
-							"0" : { "name" : "keyword.control.svdf" }
+							"0" : { "name" : "keyword.control" }
 						}
 					},
 					{
-						"name" : "string.quoted.svdf",
+						"name" : "string",
 						"match": "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?"
 					}
 				]
@@ -89,11 +89,11 @@
 				"begin" : ":",
 				"end" : "(?=;)",
 				"beginCaptures": {
-					"0" : { "name" : "keyword.operator.new.svdf" }
+					"0" : { "name" : "storage.type" }
 				},
 				"patterns": [
 					{
-						"name" : "entity.name.type",
+						"name" : "constant.numeric",
 						"match": "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?"
 					},
 					{
@@ -107,5 +107,5 @@
 			}]
 		}
 	},
-	"scopeName": "source.svdf"
+	"scopeName": "text.svdf"
 }
