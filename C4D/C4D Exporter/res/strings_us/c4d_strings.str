@@ -1,0 +1,9 @@
+// C4D-StringResource
+// Identifier	Text
+
+STRINGTABLE
+{
+	IDS_SVDF "Simple Vertex Data Format";
+	IDS_EXPORT_COMMAND_TITLE "Export SVDF objects";
+	IDS_EXPORT_COMMAND_HELP "Export all objects with SVDF tag";
+}

@@ -51,12 +51,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>$(ProjectName)</TargetName>
     <TargetExt>.cdl64</TargetExt>
-    <OutDir>$(MAXON_ROOTDIR)\plugins\$(ProjectName)</OutDir>
+    <OutDir>$(MAXON_ROOTDIR)\plugins\$(ProjectName)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>$(ProjectName)</TargetName>
     <TargetExt>.cdl64</TargetExt>
-    <OutDir>$(MAXON_ROOTDIR)\plugins\$(ProjectName)</OutDir>
+    <OutDir>$(MAXON_ROOTDIR)\plugins\$(ProjectName)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -64,8 +64,16 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>./source;./source/include;./res;./res/description;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./res;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <Link />
+    <PostBuildEvent>
+      <Command>mkdir "$(OutDir)res"
+Xcopy "$(ProjectDir)res" "$(OutDir)res" /y /s</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Copy resources</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -75,12 +83,19 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>./source;./source/include;./res;./res/description;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./res;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <PostBuildEvent>
+      <Command>mkdir "$(OutDir)res"
+Xcopy "$(ProjectDir)res" "$(OutDir)res" /y /s</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Copy resources</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\..\..\..\Program Files\MAXON\Cinema 4D R19\frameworks\cinema.framework\project\cinema.framework.vcxproj">
@@ -89,7 +104,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ExportCommand.hpp" />
+    <ClInclude Include="res\c4d_symbols.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ExportCommand.cpp" />
     <ClCompile Include="Main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\strings_us\c4d_strings.str" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

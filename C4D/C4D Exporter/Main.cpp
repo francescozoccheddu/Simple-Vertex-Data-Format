@@ -1,9 +1,9 @@
 #include "c4d.h"
+#include "ExportCommand.hpp"
 
 Bool PluginStart (void)
 {
-	MessageDialog ("Ciaooo");
-	return TRUE;
+	return ExportCommand::registerPlugin ();
 }
 
 void PluginEnd (void)
@@ -11,5 +11,14 @@ void PluginEnd (void)
 
 Bool PluginMessage (int id, void *data)
 {
-	return TRUE;
+	switch (id)
+	{
+
+		case C4DPL_INIT_SYS:
+			return resource.Init ();
+
+		default:
+			return false;
+				
+	}
 }
