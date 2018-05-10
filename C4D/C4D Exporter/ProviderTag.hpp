@@ -3,6 +3,7 @@
 
 #include "c4d.h"
 #include "c4d_tagdata.h"
+#include "SVDF/Declaration.hpp"
 
 class ProviderTag : public TagData
 {
@@ -18,9 +19,11 @@ public:
 
 	Bool GetDDescription (GeListNode* node, Description* description, DESCFLAGS_DESC& flags) override;
 
+	SVDF::DataDeclaration<float> ProvideForExport () const;
+
 	static NodeData * Alloc ();
 
-	static Bool registerPlugin ();
+	static Bool RegisterPlugin ();
 
 };
 

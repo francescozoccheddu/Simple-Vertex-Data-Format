@@ -1,7 +1,7 @@
-#include "include/Parser.hpp"
+#include "SVDF/Parser.hpp"
 
-#include "include/Grammar.hpp"
-#include "include/Utils.hpp"
+#include "SVDF/Grammar.hpp"
+#include "SVDF/Utils.hpp"
 
 #include <string>
 #include <cstdio>

@@ -27,13 +27,13 @@
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Comment.hpp" />
-    <ClInclude Include="include\Declaration.hpp" />
-    <ClInclude Include="include\Encodable.hpp" />
-    <ClInclude Include="include\Grammar.hpp" />
-    <ClInclude Include="include\Map.hpp" />
-    <ClInclude Include="include\Parser.hpp" />
-    <ClInclude Include="include\Utils.hpp" />
+    <ClInclude Include="include\SVDF\Comment.hpp" />
+    <ClInclude Include="include\SVDF\Declaration.hpp" />
+    <ClInclude Include="include\SVDF\Encodable.hpp" />
+    <ClInclude Include="include\SVDF\Grammar.hpp" />
+    <ClInclude Include="include\SVDF\Map.hpp" />
+    <ClInclude Include="include\SVDF\Parser.hpp" />
+    <ClInclude Include="include\SVDF\Utils.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -94,6 +94,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <DisableLanguageExtensions>true</DisableLanguageExtensions>
+      <AdditionalIncludeDirectories>./include/;</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -103,6 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <DisableLanguageExtensions>true</DisableLanguageExtensions>
+      <AdditionalIncludeDirectories>./include/;</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -114,6 +116,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <DisableLanguageExtensions>true</DisableLanguageExtensions>
+      <AdditionalIncludeDirectories>./include/;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -129,6 +132,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <DisableLanguageExtensions>true</DisableLanguageExtensions>
+      <AdditionalIncludeDirectories>./include/;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

@@ -4,6 +4,7 @@
 #include "c4d_gui.h"
 #include "c4d_tagdata.h"
 #include "c4d_symbols.h"
+#include "SVDF/Declaration.hpp"
 
 const Int32 ProviderTag::id{ 900000110 };
 
@@ -19,7 +20,22 @@ EXECUTIONRESULT ProviderTag::Execute (BaseTag * tag, BaseDocument * doc, BaseObj
 
 Bool ProviderTag::GetDDescription (GeListNode * node, Description * description, DESCFLAGS_DESC & flags)
 {
+	if (!node || !description)
+		return false;
+
+	if (!description->LoadDescription (node->GetType ()))
+		return false;
+
+	flags |= DESCFLAGS_DESC_LOADED;
+
 	return SUPER::GetDDescription (node, description, flags);
+}
+
+SVDF::DataDeclaration<float> ProviderTag::ProvideForExport () const
+{
+	SVDF::DataDeclaration<float> decl;
+	decl.map.put_string ("Example", "Not Implemented Yet");
+	return decl;
 }
 
 NodeData * ProviderTag::Alloc ()
@@ -27,7 +43,7 @@ NodeData * ProviderTag::Alloc ()
 	return NewObj (ProviderTag);
 }
 
-Bool ProviderTag::registerPlugin ()
+Bool ProviderTag::RegisterPlugin ()
 {
-	return RegisterTagPlugin (id, GeLoadString (IDS_TAG_TITLE), TAG_VISIBLE, ProviderTag::Alloc, "ProviderTag", AutoBitmap("icon.tif"), 0);
+	return RegisterTagPlugin (id, GeLoadString (IDS_TAG_TITLE), TAG_VISIBLE, ProviderTag::Alloc, "Tprovider", AutoBitmap("icon.tif"), 0);
 }

@@ -1,7 +1,7 @@
-#include "include/Comment.hpp"
+#include "SVDF/Comment.hpp"
 
-#include "include/Grammar.hpp"
-#include "include/Encodable.hpp"
+#include "SVDF/Grammar.hpp"
+#include "SVDF/Encodable.hpp"
 
 #include <string>
 #include <ostream>

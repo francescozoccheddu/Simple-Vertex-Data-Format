@@ -64,7 +64,7 @@ namespace SVDF
 
 	public:
 
-		using Declaration::Declaration;
+		DataDeclaration () = default;
 
 		DataDeclaration (const DataDeclaration & declaration) = default;
 

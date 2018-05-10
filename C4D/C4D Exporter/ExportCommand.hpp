@@ -15,7 +15,7 @@ public:
 
 	Bool Execute (BaseDocument * document) override;
 
-	static Bool registerPlugin();
+	static Bool RegisterPlugin();
 
 };
 

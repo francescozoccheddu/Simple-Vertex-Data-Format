@@ -4,12 +4,12 @@
 
 Bool PluginStart (void)
 {
-	if (!ExportCommand::registerPlugin ())
+	if (!ExportCommand::RegisterPlugin ())
 	{
 		return false;
 	}
 	
-	if (!ProviderTag::registerPlugin ())
+	if (!ProviderTag::RegisterPlugin ())
 	{
 		return false;
 	}

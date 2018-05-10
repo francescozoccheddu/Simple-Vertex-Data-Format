@@ -1,8 +1,8 @@
-#include "include/Declaration.hpp"
+#include "SVDF/Declaration.hpp"
 
-#include "include/Encodable.hpp"
-#include "include/Grammar.hpp"
-#include "include/Map.hpp"
+#include "SVDF/Encodable.hpp"
+#include "SVDF/Grammar.hpp"
+#include "SVDF/Map.hpp"
 
 #include <ostream>
 #include <utility>

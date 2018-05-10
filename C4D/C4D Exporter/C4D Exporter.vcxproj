@@ -64,7 +64,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>./res;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./../../SVDF/Library\include;./res;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link />
     <PostBuildEvent>
@@ -83,7 +83,7 @@ Xcopy "$(ProjectDir)res" "$(OutDir)res" /y /s</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>./res;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./../../SVDF/Library\include;./res;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -101,6 +101,9 @@ Xcopy "$(ProjectDir)res" "$(OutDir)res" /y /s</Command>
     <ProjectReference Include="..\..\..\..\..\..\..\..\Program Files\MAXON\Cinema 4D R19\frameworks\cinema.framework\project\cinema.framework.vcxproj">
       <Project>{69bf9b7d-7eb2-7fc5-0009-38cb8c5cdea3}</Project>
       <Private>false</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SVDF\Library\Library.vcxproj">
+      <Project>{fb51e074-3a4e-4821-b1ad-b50e0a289732}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
