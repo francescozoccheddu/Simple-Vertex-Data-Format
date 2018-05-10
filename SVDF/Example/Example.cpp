@@ -1,10 +1,10 @@
 #include <iostream>
 #include <vector>
 
-#include "../Library/include/Parser.hpp"
-#include "../Library/include/Declaration.hpp"
-#include "../Library/include/Comment.hpp"
-#include "../Library/include/Encodable.hpp"
+#include "SVDF/Parser.hpp"
+#include "SVDF/Declaration.hpp"
+#include "SVDF/Comment.hpp"
+#include "SVDF/Encodable.hpp"
 
 using namespace SVDF;
 

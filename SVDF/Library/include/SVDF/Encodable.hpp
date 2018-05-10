@@ -24,10 +24,10 @@ namespace SVDF
 	}
 
 	template<typename T>
-	using enable_if_encodable_pointer_t = typename std::enable_if<type_traits::is_encodable_pointer<T>::value>::type;
+	using enable_if_encodable_pointer_t = typename std::enable_if<type_traits::is_encodable_pointer<T>::value, T>::type;
 
 	template<typename T>
-	using enable_if_encodable_pointer_iterator_t = typename std::enable_if<type_traits::is_encodable_pointer_iterator<T>::value>::type;
+	using enable_if_encodable_pointer_iterator_t = typename std::enable_if<type_traits::is_encodable_pointer_iterator<T>::value, T>::type;
 
 	class Encodable
 	{
@@ -42,10 +42,10 @@ namespace SVDF
 			NEWLINE_TRUNCATE,
 		};
 
-		template <typename Iterator, typename = typename SVDF::enable_if_encodable_pointer_iterator_t<Iterator>>
+		template <typename Iterator = typename SVDF::enable_if_encodable_pointer_iterator_t<Iterator>>
 		static void encode (std::ostream & stream, const Iterator & first, const Iterator & last, Format format = Format::NEWLINE);
 
-		template <typename Iterator, typename = typename SVDF::enable_if_encodable_pointer_iterator_t<Iterator>>
+		template <typename Iterator = typename SVDF::enable_if_encodable_pointer_iterator_t<Iterator>>
 		static std::string encode (const Iterator & first, const Iterator & last, Format format = Format::NEWLINE);
 
 		virtual void encode (std::ostream & stream, Format format = Format::NEWLINE) const = 0;
@@ -58,7 +58,7 @@ namespace SVDF
 
 	};
 
-	template <typename Iterator, typename _EI>
+	template <typename Iterator>
 	inline void Encodable::encode (std::ostream & stream, const Iterator & first, const Iterator & last, Format format)
 	{
 		for (auto it = first; it != last; ++it)
@@ -83,7 +83,7 @@ namespace SVDF
 		}
 	}
 
-	template <typename Iterator, typename _EI>
+	template <typename Iterator>
 	inline std::string Encodable::encode (const Iterator & first, const Iterator & last, Format format)
 	{
 		std::ostringstream stream;
@@ -91,7 +91,7 @@ namespace SVDF
 		return stream.str ();
 	}
 
-	template <typename T, typename = enable_if_encodable_pointer_t<T>>
+	template <typename T = typename enable_if_encodable_pointer_t<T>>
 	std::ostream & operator << (std::ostream & stream, const std::vector<T> & vector)
 	{
 		Encodable::encode (stream, vector.begin (), vector.end ());
