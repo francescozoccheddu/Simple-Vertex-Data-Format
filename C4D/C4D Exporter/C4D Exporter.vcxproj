@@ -105,11 +105,13 @@ Xcopy "$(ProjectDir)res" "$(OutDir)res" /y /s</Command>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ExportCommand.hpp" />
+    <ClInclude Include="ProviderTag.hpp" />
     <ClInclude Include="res\c4d_symbols.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ExportCommand.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="ProviderTag.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\strings_us\c4d_strings.str" />

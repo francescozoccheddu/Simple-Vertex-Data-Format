@@ -6,4 +6,6 @@ STRINGTABLE
 	IDS_SVDF "Simple Vertex Data Format";
 	IDS_EXPORT_COMMAND_TITLE "Export SVDF objects";
 	IDS_EXPORT_COMMAND_HELP "Export all objects with SVDF tag";
+	IDS_TAG_TITLE "SVDF Tag";
+	IDS_TAG_HELP "SVDF Tag";
 }

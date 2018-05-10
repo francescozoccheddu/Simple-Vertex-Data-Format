@@ -17,5 +17,5 @@ Bool ExportCommand::Execute (BaseDocument * document)
 
 Bool ExportCommand::registerPlugin ()
 {
-	return RegisterCommandPlugin (ExportCommand::id, GeLoadString(IDS_EXPORT_COMMAND_TITLE), 0, nullptr, GeLoadString(IDS_EXPORT_COMMAND_HELP), NewObj (ExportCommand));
+	return RegisterCommandPlugin (ExportCommand::id, GeLoadString(IDS_EXPORT_COMMAND_TITLE), 0, AutoBitmap ("icon.tif"), GeLoadString(IDS_EXPORT_COMMAND_HELP), NewObj (ExportCommand));
 }

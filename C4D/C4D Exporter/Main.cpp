@@ -1,9 +1,20 @@
 #include "c4d.h"
 #include "ExportCommand.hpp"
+#include "ProviderTag.hpp"
 
 Bool PluginStart (void)
 {
-	return ExportCommand::registerPlugin ();
+	if (!ExportCommand::registerPlugin ())
+	{
+		return false;
+	}
+	
+	if (!ProviderTag::registerPlugin ())
+	{
+		return false;
+	}
+
+	return true;
 }
 
 void PluginEnd (void)

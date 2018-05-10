@@ -7,6 +7,7 @@
 
 class ExportCommand : public CommandData
 {
+	INSTANCEOF (ProviderTag, TagData);
 
 public:
 
