@@ -48,19 +48,19 @@ namespace SVDF
 
 		Map next_map ();
 
-		template<typename T, typename = typename SVDF::enable_if_data_value_t<T> >
+		template<typename T = typename SVDF::enable_if_data_value_t<T> >
 		T next_value ();
 
-		template<typename T, typename = typename SVDF::enable_if_data_value_t<T> >
+		template<typename T = typename SVDF::enable_if_data_value_t<T> >
 		int next_data (T * data, int max);
 
-		template<typename T, typename = typename SVDF::enable_if_data_value_t<T> >
+		template<typename T = typename SVDF::enable_if_data_value_t<T> >
 		int next_data (std::vector<T> & data, int max = infinite);
 
-		template<typename T, typename = typename SVDF::enable_if_data_value_t<T> >
+		template<typename T = typename SVDF::enable_if_data_value_t<T> >
 		int next_data (DataDeclaration<T> & data, int max = infinite);
 
-		template<typename T, typename = typename SVDF::enable_if_data_value_t<T> >
+		template<typename T = typename SVDF::enable_if_data_value_t<T> >
 		DataDeclaration<T> next_declaration ();
 
 		bool has_data () const;
@@ -92,13 +92,13 @@ namespace SVDF
 		std::istream & stream;
 		State state;
 
-		template<typename T, typename = typename SVDF::enable_if_data_value_t<T> >
+		template<typename T = typename SVDF::enable_if_data_value_t<T> >
 		T consume_value ();
 
-		template<typename T, typename = typename SVDF::enable_if_data_value_t<T> >
+		template<typename T = typename SVDF::enable_if_data_value_t<T> >
 		int consume_data (T * data, int max);
 
-		template<typename T, typename = typename SVDF::enable_if_data_value_t<T> >
+		template<typename T = typename SVDF::enable_if_data_value_t<T> >
 		int consume_data (std::vector<T> & data, int max);
 
 		Map consume_map ();
@@ -125,7 +125,7 @@ namespace SVDF
 
 	};
 
-	template<typename T, typename>
+	template<typename T>
 	inline T Parser::consume_value ()
 	{
 		consume_comment ();
@@ -171,7 +171,7 @@ namespace SVDF
 	}
 
 
-	template<typename T, typename>
+	template<typename T>
 	inline T Parser::next_value ()
 	{
 		const BackupState backup{ make_backup () };
@@ -186,7 +186,7 @@ namespace SVDF
 		}
 	}
 
-	template<typename T, typename>
+	template<typename T>
 	inline int Parser::consume_data (T * _data, int _max)
 	{
 		int count = 0;
@@ -198,7 +198,7 @@ namespace SVDF
 		return count;
 	}
 
-	template<typename T, typename>
+	template<typename T>
 	inline int Parser::consume_data (std::vector<T> & _data, int _max)
 	{
 		int count = 0;
@@ -210,7 +210,7 @@ namespace SVDF
 		return count;
 	}
 
-	template<typename T, typename>
+	template<typename T>
 	inline int Parser::next_data (T * _data, int _max)
 	{
 		BackupState backup{ make_backup () };
@@ -225,7 +225,7 @@ namespace SVDF
 		}
 	}
 
-	template<typename T, typename>
+	template<typename T>
 	inline int Parser::next_data (std::vector<T>& _data, int _max)
 	{
 		BackupState backup{ make_backup () };
@@ -240,13 +240,13 @@ namespace SVDF
 		}
 	}
 
-	template<typename T, typename>
+	template<typename T>
 	inline int Parser::next_data (DataDeclaration<T>& _data, int _max)
 	{
 		return next_data (_data.data, _max);
 	}
 
-	template<typename T, typename>
+	template<typename T>
 	inline DataDeclaration<T> Parser::next_declaration ()
 	{
 		BackupState backup{ make_backup () };
