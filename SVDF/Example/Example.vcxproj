@@ -126,6 +126,9 @@
       <Project>{fb51e074-3a4e-4821-b1ad-b50e0a289732}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="example.svdf" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

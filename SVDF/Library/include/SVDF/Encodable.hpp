@@ -4,30 +4,9 @@
 #include <sstream>
 #include <vector>
 #include <string>
-#include <type_traits>
-#include <iterator>
 
 namespace SVDF
 {
-
-	class Encodable;
-
-	namespace type_traits
-	{
-
-		template<typename T>
-		struct is_encodable_pointer : std::is_base_of < Encodable, typename std::remove_pointer< T >::type > {};
-
-		template<typename T>
-		struct is_encodable_pointer_iterator : is_encodable_pointer < typename std::iterator_traits< T >::value_type > {};
-
-	}
-
-	template<typename T>
-	using enable_if_encodable_pointer_t = typename std::enable_if<type_traits::is_encodable_pointer<T>::value, T>::type;
-
-	template<typename T>
-	using enable_if_encodable_pointer_iterator_t = typename std::enable_if<type_traits::is_encodable_pointer_iterator<T>::value, T>::type;
 
 	class Encodable
 	{
@@ -42,11 +21,11 @@ namespace SVDF
 			NEWLINE_TRUNCATE,
 		};
 
-		template <typename Iterator = typename SVDF::enable_if_encodable_pointer_iterator_t<Iterator>>
-		static void encode (std::ostream & stream, const Iterator & first, const Iterator & last, Format format = Format::NEWLINE);
+		template <typename T>
+		static void encode (std::ostream & stream, const T & first, const T & last, Format format = Format::NEWLINE);
 
-		template <typename Iterator = typename SVDF::enable_if_encodable_pointer_iterator_t<Iterator>>
-		static std::string encode (const Iterator & first, const Iterator & last, Format format = Format::NEWLINE);
+		template <typename T>
+		static std::string encode (const T & first, const T & last, Format format = Format::NEWLINE);
 
 		virtual void encode (std::ostream & stream, Format format = Format::NEWLINE) const = 0;
 
@@ -58,8 +37,8 @@ namespace SVDF
 
 	};
 
-	template <typename Iterator>
-	inline void Encodable::encode (std::ostream & stream, const Iterator & first, const Iterator & last, Format format)
+	template <typename T>
+	inline void Encodable::encode (std::ostream & stream, const T & first, const T & last, Format format)
 	{
 		for (auto it = first; it != last; ++it)
 		{
@@ -83,15 +62,15 @@ namespace SVDF
 		}
 	}
 
-	template <typename Iterator>
-	inline std::string Encodable::encode (const Iterator & first, const Iterator & last, Format format)
+	template <typename T>
+	inline std::string Encodable::encode (const T & first, const T & last, Format format)
 	{
 		std::ostringstream stream;
 		encode (stream, first, last, format);
 		return stream.str ();
 	}
 
-	template <typename T = typename enable_if_encodable_pointer_t<T>>
+	template <typename T>
 	std::ostream & operator << (std::ostream & stream, const std::vector<T> & vector)
 	{
 		Encodable::encode (stream, vector.begin (), vector.end ());

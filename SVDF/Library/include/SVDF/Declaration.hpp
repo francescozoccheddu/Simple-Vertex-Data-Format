@@ -4,34 +4,10 @@
 #include "Encodable.hpp"
 #include "Map.hpp"
 
-#include <type_traits>
 #include <ostream>
 
 namespace SVDF
 {
-
-	namespace type_traits
-	{
-
-		template<typename> struct is_data_value : std::false_type {};
-
-		template<> struct is_data_value<long double> : std::true_type {};
-		template<> struct is_data_value<double> : std::true_type {};
-		template<> struct is_data_value<float> : std::true_type {};
-		template<> struct is_data_value<signed long long> : std::true_type {};
-		template<> struct is_data_value<unsigned long long> : std::true_type {};
-		template<> struct is_data_value<signed long> : std::true_type {};
-		template<> struct is_data_value<unsigned long> : std::true_type {};
-		template<> struct is_data_value<signed int> : std::true_type {};
-		template<> struct is_data_value<unsigned int> : std::true_type {};
-		template<> struct is_data_value<signed short> : std::true_type {};
-		template<> struct is_data_value<unsigned short> : std::true_type {};
-
-		template<typename T> struct is_data_value_v : is_data_value<typename std::remove_volatile<T>::type> {};
-
-	}
-
-	template<typename T> using enable_if_data_value_t = typename std::enable_if<type_traits::is_data_value_v<T>::value, T>::type;
 
 	class Declaration : public Encodable
 	{
@@ -58,7 +34,7 @@ namespace SVDF
 
 	};
 
-	template<typename T = typename SVDF::enable_if_data_value_t<T> >
+	template<typename T>
 	class DataDeclaration : public Declaration
 	{
 

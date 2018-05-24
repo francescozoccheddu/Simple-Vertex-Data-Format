@@ -48,19 +48,19 @@ namespace SVDF
 
 		Map next_map ();
 
-		template<typename T = typename SVDF::enable_if_data_value_t<T> >
+		template<typename T>
 		T next_value ();
 
-		template<typename T = typename SVDF::enable_if_data_value_t<T> >
+		template<typename T>
 		int next_data (T * data, int max);
 
-		template<typename T = typename SVDF::enable_if_data_value_t<T> >
+		template<typename T>
 		int next_data (std::vector<T> & data, int max = infinite);
 
-		template<typename T = typename SVDF::enable_if_data_value_t<T> >
+		template<typename T>
 		int next_data (DataDeclaration<T> & data, int max = infinite);
 
-		template<typename T = typename SVDF::enable_if_data_value_t<T> >
+		template<typename T>
 		DataDeclaration<T> next_declaration ();
 
 		bool has_data () const;
@@ -92,13 +92,13 @@ namespace SVDF
 		std::istream & stream;
 		State state;
 
-		template<typename T = typename SVDF::enable_if_data_value_t<T> >
+		template<typename T>
 		T consume_value ();
 
-		template<typename T = typename SVDF::enable_if_data_value_t<T> >
+		template<typename T>
 		int consume_data (T * data, int max);
 
-		template<typename T = typename SVDF::enable_if_data_value_t<T> >
+		template<typename T> 
 		int consume_data (std::vector<T> & data, int max);
 
 		Map consume_map ();

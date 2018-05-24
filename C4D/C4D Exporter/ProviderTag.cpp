@@ -4,6 +4,7 @@
 #include "c4d_gui.h"
 #include "c4d_tagdata.h"
 #include "c4d_symbols.h"
+#include "SVDF/Declaration.hpp"
 
 const Int32 ProviderTag::id{ 900000110 };
 
@@ -30,10 +31,10 @@ Bool ProviderTag::GetDDescription (GeListNode * node, Description * description,
 	return SUPER::GetDDescription (node, description, flags);
 }
 
-/*SVDF::DataDeclaration<float> ProviderTag::ProvideForExport () const
+SVDF::DataDeclaration<float> ProviderTag::ProvideForExport () const
 {
 	throw this;
-}*/
+}
 
 NodeData * ProviderTag::Alloc ()
 {
